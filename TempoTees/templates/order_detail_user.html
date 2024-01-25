@@ -1,0 +1,151 @@
+{% extends "profile.html" %}
+{% load static %}
+
+{% block exhead %}
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:profile' %}">Personal Information</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-purple h5 bg-light rounded" href="{% url 'h:orders' %}">My Orders</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:add_address' 'x%x23' %}">New Addresses</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="#wish-list">wallet</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="#my-cart">My Cart</a>
+</li>
+{% endblock exhead %}
+
+{% block content %}
+    <!-- Table for Order Details -->
+    <div class="container-fluid my-5 w-75">
+        <h3 class="" ><strong>ID: </strong>{{ order.order_id}}</h3>
+        {% if order.order_status.status != 'cancelled' %}
+        <table class="table table-bordered shadow">
+            <thead>
+                <tr>
+                    <th class="product-thumbnail">Order Image</th>
+                    <th class="product-name">Item Name</th>
+                    <th class="product-price">Item Price</th>
+                    <th class="product-price">Cancel item</th>
+                    <th class="product-quantity">Quantity</th>
+                    <!-- Add more headings as needed -->
+                </tr>
+            </thead>
+            <tbody>
+
+                
+                {% for item in items %}
+                <tr>
+                    <td class="product-thumbnail">
+                    
+                        {% for img in item.item.images.all %}
+                        {% if forloop.first %}
+                        <img src="{{ img.image.url }}" alt="Order Image" class="img-fluid">
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    
+                    <td class="product-name">
+                        <h2 class="h5 text-black">{{ item.item.product_name }}</h2>
+                    </td>
+                    <td >&#8377; {{ item.item.price }}</td>
+                    <td>
+                        {% if order.order_status.status == 'delivered' %}
+                        <button
+                        {% comment %} href="{% url 'h:cancel_order_item' item.id order.id %}" {% endcomment %}
+                        id="cancel_button"
+                        class="btn head-sec text-white"
+                        data-toggle="modal"
+                        data-target="#cancelModal">
+                        Return Item
+                    </button>
+                        {% else  %}
+                      <button
+                          {% comment %} href="{% url 'h:cancel_order_item' item.id order.id %}" {% endcomment %}
+                          id="cancel_button"
+                          class="btn head-sec text-white"
+                          data-toggle="modal"
+                          data-target="#cancelModal">
+                          Cancel Item
+                      </button>
+                      {% endif %}
+                  </td>
+                    <td class="text-dark">{{ item.quantity }}</td>
+                    
+                </tr>
+                   <!-- Modal -->
+        <div class="modal fade text-center" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header text-center">
+                      <h5 class="modal-title mx-auto" id="cancelModalLabel">Are you sure</h5>
+                  </div>
+                  <div class="modal-body">
+                      This action will permenently return or refund your order ,<br> 
+                      {% if not order.payment_mode.mode == 'COD' %}
+                      The money will be returned to your wallet safely.
+                      {% endif %}
+                      <br>
+                      Why did you take this decision ? 
+                      <form action="{% url 'h:cancel_order_item' item.id order.id %}" method="POST">
+                        {% csrf_token %}
+            <input type="text" id="reason"  name="reason" placeholder="" required class="form-control">
+                        <input type="submit" value="submit" class="btn btn-danger my-3 mx-auto">
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                       
+                  </div>
+              </div>
+          </div>
+        </div>
+                {% endfor %}
+     
+            </tbody>
+        </table>
+        <h5>shipping cost: 20</h5>
+         
+        {% endif %}
+
+        <div class="container py-5">
+          <div class="row">
+              <div class="col-md-6">
+                  <div class="card head-sec text-white">
+                      <div class="card-body">
+                          <h5 class="card-title">User Details</h5>
+                          <p class="card-text">
+                              <span class="d-block text-uppercase">{{ order.address.name }}</span>
+                              {{ order.address.area_desc }} {{ order.address.city }}, {{ order.address.state }}-{{ order.address.pincode }}<br>
+                              Contact: {{ order.address.mobile_number }}
+                          </p>
+                          <p class="card-text"><strong>Username:</strong> {{ order.user.username }}</p>
+                          <!-- Add other user details as needed -->
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="card head-sec text-white">
+                      <div class="card-body">
+                          <h5 class="card-title">Order Details</h5>
+                          <p class="card-text"><strong>Total Amount:</strong> {{ order.total_amount }}</p>
+                          <p class="card-text"><strong>Order Status:</strong> {{ order.order_status }}</p>
+                          <p class="card-text"><strong>Payment mode:</strong> {{ order.payment_mode.mode }}</p>
+                      </div>
+                      <a href="{% url 'h:download_invoice' order.id %}" class="btn bg-light text-purple"><i class="icon icon-file text-purple"> </i>Download invoice</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      
+        
+ </div>
+
+{% endblock content %}
+
+         
+             

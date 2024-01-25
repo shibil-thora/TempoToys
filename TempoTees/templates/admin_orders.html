@@ -1,0 +1,84 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+
+<table class="table table-bordered table-hover mt-3">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Order ID</th>
+            <th scope="col">Item Names</th>
+            <th scope="col">User</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Order Status</th>
+            <th scope="col">Payment Method</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+    <tr>
+        
+        <td><a href="{% url 'a:admin_order_details' order.id %}" title="click for order details" style="text-decoration: underline; font-weight: bold;">{{ order.order_id }}</a></td>
+        
+
+        <td>
+            {% for item in order.order_items.all %}
+                &bullet; {{ item.item.product_name }} x <strong>{{ item.quantity }}</strong> <br>
+            {% endfor %}
+        </td>
+
+        <td>{{ order.user.username }}</td>
+
+        <td>{{ order.date.date }}</td>
+
+        <td><strong>{{ order.total_amount }}</strong></td>
+
+        <td class="text-center">
+            
+            {% if order.order_status.status == 'pending' %}
+                <button onclick="toggleDiv('{{ order.order_id }}')" class="btn btn-warning rounded-5">{{ order.order_status }}</button>
+            {% elif order.order_status.status == 'cancelled' %}
+                <button onclick="toggleDiv('{{ order.order_id }}')" class="btn btn-danger rounded-5">{{ order.order_status }}</button>
+            {% elif order.order_status.status == 'out for delivery' %}
+                <button onclick="toggleDiv('{{ order.order_id }}')" class="btn btn-info rounded-5">{{ order.order_status }}</button>
+            {% elif order.order_status.status == 'dispatched' %}
+                <button onclick="toggleDiv('{{ order.order_id }}')" class="btn btn-primary rounded-5">{{ order.order_status }}</button>
+         
+            {% else %}
+                <button onclick="toggleDiv('{{ order.order_id }}')" class="btn btn-success rounded-5">{{ order.order_status }}</button>
+            {% endif %}
+
+            {% if order.order_status.status == 'pending' or order.order_status.status == 'out for delivery' or order.order_status.status == 'dispatched'%}
+            <div id="{{ order.order_id }}" class="text-center border border-dark my-3 py-2" style="display: none;">
+                <!-- Your content goes here -->
+                <a href="{% url 'a:admin_orders' %}" class="border border-dark bg-warning text-white px-3 rounded">&nbsp;pending&nbsp;</a>
+                <br>
+                <a href="{% url 'a:cancel_order' order.id %}" class="border border-dark bg-danger text-white px-3 rounded">&nbsp;&nbsp;&nbsp;cancel&nbsp;&nbsp;&nbsp;</a>
+                <br>
+                <a href="{% url 'a:change_to_delivered' order.id %}" class="border border-dark bg-success text-white px-3 rounded">delivered</a>
+                <br>
+                <a href="{% url 'a:change_to_dispatched' order.id %}" class="border border-dark bg-primary text-white px-3 rounded">&nbsp;dispatch&nbsp;</a>
+                <br>
+                <a href="{% url 'a:change_to_out' order.id %}" class="border border-dark bg-info text-white px-3 rounded">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+            </div>
+            {% endif %}
+        </td>
+
+        <td class="text-success"><strong>{{ order.payment_mode }}</strong></td>
+    </tr>
+{% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function toggleDiv(orderId) {
+        var div = document.getElementById(orderId);
+        if (div.style.display === "none") {
+            div.style.display = "block";
+        } else {
+            div.style.display = "none";
+        }
+    }
+</script>
+
+{% endblock content %}

@@ -1,0 +1,151 @@
+{% extends "admin_panel.html" %}
+
+
+{% block content %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="fade-out fixed-top text-center mx-auto text-white w-50 bg-danger my-1 py-3" role="alert" data-mdb-color="success" data-mdb-delay="7000" data-mdb-autohide="true">
+        {{ message }}
+       </div>
+    {% endfor %}
+    {% endif %}
+
+<div class="card shadow border border-dark">
+    <div class="head-card-edit text-center card-header text-white">
+        <legend class="text-white bg-dark p-3 rounded d-inline my-2">EDIT PRODUCT</legend>
+    </div>
+    <div class="card-body">
+      
+
+        
+      <form class="form-horizontal" action="{% url 'a:edit_product' product.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+        <div class="container w-100">
+
+        <!-- Text input-->
+
+        <div data-mdb-input-init class="form-outline mb-3">
+            <p class="text-left m-0"><small>product name</small></p>
+            <input type="text" id="product_name" value="{{ product.product_name }}" selected name="product_name" placeholder="Product name" required class="form-control">
+        </div>
+
+
+        <p class="text-left m-0 "><small>Brand </small></p>
+        <select class="custom-select mb-3" id="brand" name="brand">
+          {% for brand in brands %}
+          {% if brand.name == product.brand.name %}
+          <option selected value="{{ brand.name }}">{{ brand.name }} </option>
+          {% else %}
+          <option value="{{ brand.name }}"> {{ brand.name }} </option>
+          {% endif %}
+          {% endfor %}
+      </select>
+
+
+        <p class="text-left m-0 "><small>Category</small></p>
+            <select class="custom-select mb-3" id="category" name="category">
+              {% for category in categories %}
+              {% if category.category_name == product.category.category_name %}
+              <option selected value="{{ category.category_name }}">{{ category.category_name }} </option>
+              {% else %}
+              <option value="{{ category.category_name }}"> {{ category.category_name }} </option>
+              {% endif %}
+              {% endfor %}
+            </select>
+
+    
+        
+
+        <div data-mdb-input-init class="form-outline mb-3">
+            <p class="text-left m-0"><small>stock</small></p>
+            <input type="number" id="stock" value="{{ product.stock }}" name="stock" placeholder="stock" required class="form-control" min=0>
+        </div>
+    
+
+
+        <div data-mdb-input-init class="form-outline mb-3">
+            <p class="text-left m-0"><small>product caption</small></p>
+            <input type="text" id="description" value="{{ product.product_desc }}" name="description" maxlength="35" placeholder="Product caption" required class="form-control">
+        </div>
+
+
+
+            <div class="form-group">
+                <p class="text-left m-0"><small>product description</small></p>
+                <textarea class="form-control" id="description_detailed" placeholder="Product description" name="description_detailed" rows="2">
+                    {{ product.product_desc_detailed }}
+                </textarea>
+              </div>
+
+
+            <div data-mdb-input-init class="form-outline mb-3">
+                <p class="text-left m-0"><small>price</small></p>
+                <input type="number" id="price" name="price" value="{{ product.price }}" placeholder="price" required class="form-control" min=0 step="0.01">
+            </div>
+    
+            {% comment %} <div class="form-group d-flex flex-column align-items-start">
+                <div class="mx-0 text-left"><strong>Delete all images</strong></div>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Delete</button>
+             </div> {% endcomment %}
+             <table class="table table-bordered table-hover">
+              <thead class="thead-dark">
+                  <tr>
+                      <th>Delete</th>
+                      <th>Image</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for img in product.images.all %}
+                  <tr>
+                      <td>
+                          <a href="{% url 'a:delete_images' img.id product.id %}" class="btn btn-danger btn-sm">
+                              <i class="gd-trash"></i> Delete
+                          </a>
+                      </td>
+                      <td><img src="{{ img.image.url }}" class="img-fluid w-25 p-3" alt="Product Image"></td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+             <!-- Trigger the modal with a button -->
+
+
+ 
+               
+
+            <div class="form-group d-flex flex-column align-items-start">
+               <label for="" class="mx-0 text-left"><strong>Upload new images</strong></label>
+              <input type="file" class="form-control-file" id="image_set" name="image_set" multiple>
+            </div>
+           
+           
+        
+    
+    {% comment %}  We stopped here only because there was a concept to add multiple images
+    here we need to accept the image as an array first. so look about it.
+     {% endcomment %}
+    
+
+    
+        </div>
+        <input type="submit" value="Save changes" class="btn btn-warning">
+    </form>
+
+      
+    </div>
+  </div>
+  
+  
+  
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+ 
+{% endblock content %}

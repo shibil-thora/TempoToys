@@ -1,0 +1,78 @@
+{% extends "profile.html" %}
+{% load static %}
+
+{% block exhead %}
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:profile' %}">Personal Information</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-purple h5 bg-light rounded" href="{% url 'h:orders' %}">My Orders</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:add_address' 'x%x23' %}">New Addresses</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:wallet' %}">wallet</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="#my-cart">My Cart</a>
+</li>
+{% endblock exhead %}
+
+{% block content %}
+<div class="container my-5">
+  {% if orders %}
+ 
+      <div class="table-responsive">
+        {% for order in orders %}
+          <table class="table table-bordered border bg-white p-3 rounded shadow my-5">
+              <thead>
+                  <tr>
+                      <th>Order ID</th>
+                      <th>Order Status</th>
+                      <th>Total Amount</th>
+                      <th class="text-center">Order Items</th>
+                      <th>Order details</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  
+                      <tr>
+                          <td>{{ order.order_id }}</td>
+                          <td class="text-dark"><strong>{{ order.order_status }}</strong></td>
+                          <td>&#8377; {{ order.total_amount }}</td>
+                          <td class="text-center">
+                              {% for item in order.order_items.all %}
+                                  {% for img in item.item.images.all %}
+                                      {% if forloop.first %}
+                                          <div class="container w-50">
+                                          <img src="{{ img.image.url }}" alt="image" class="border border-dark my-2 w-25 img-fluid">
+                                          </div>
+                                      {% endif %}
+                                  {% endfor %}
+                                  {{item.item.product_name}}
+                              {% endfor %}
+                          </td>
+                          <td class="text-center">
+                              <a href="{% url 'h:order_details' order.id %}" class="btn head-sec text-white">Order details</a>
+                          </td>
+                      </tr>
+                  
+              </tbody>
+          </table>
+         
+          {% endfor %}
+      </div>
+  {% else %}
+      <div class="text-center">
+          <img src="{% static 'images/noorder.jpeg' %}" class="img-fluid w-25 mx-auto" alt="No Orders">
+          <h6 class="mt-2">It seems like your order history is empty at the moment!</h6>
+      </div>
+  {% endif %}
+</div>
+
+  
+{% endblock content %}
+
+         
+             

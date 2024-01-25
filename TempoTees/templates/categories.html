@@ -1,0 +1,40 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="fade-out fixed-bottom text-center mx-auto text-white w-50 bg-danger my-1 py-3" role="alert" data-mdb-color="success" data-mdb-delay="5000" data-mdb-autohide="true">
+        {{ message }}
+       </div>
+    {% endfor %}
+    {% endif %}
+ 
+<div class="card w-100">
+    <div class="card-body text-left">
+      <h5 class="card-title">Categories</h5>
+      <ul class="list-group list-group-flush">
+        {% for category in categories %}
+        <li class="list-group-item border border-dark text-decoration-none">
+            <a href="{% url 'a:delete_category' category.id %}" class="text-light text-decoration-none btn btn-danger"> 
+            <i class="gd-trash"></i>
+            </a>
+            &nbsp; &nbsp;
+            <a href="{% url 'a:edit_category' category.id %}" class="text-primary text-decoration-none btn btn-warning"> 
+                <i class="gd-pencil"></i> 
+            </a> &nbsp; {{ category }} </li>
+        
+        {% endfor %}
+        
+      </ul>
+    </div>
+    <a href="{% url 'a:add_category' %}" class="btn btn-success">add + </a>
+   </div>
+
+  </div>
+</div>
+
+
+ 
+
+
+{% endblock content %}

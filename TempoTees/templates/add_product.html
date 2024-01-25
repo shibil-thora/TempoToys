@@ -1,0 +1,168 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+
+ 
+
+ 
+ 
+
+<div class="card shadow border border-dark">
+    <div class="head-card card-header  text-center text-white">
+        <legend class="text-white bg-dark p-3 rounded d-inline my-2">ADD PRODUCT</legend>
+    </div>
+    <div class="card-body">
+      
+        
+      <form class="form-horizontal" action="{% url 'a:add_product' %}" method="POST" enctype="multipart/form-data" id="yourFormId">
+            {% csrf_token %}
+        <div class="container w-100">
+
+        <!-- Text input-->
+
+        <div data-mdb-input-init class="form-outline mb-3">
+        
+            <input type="text" id="product_name" name="product_name" placeholder="Product name" required class="form-control">
+            {% if 'product name should be atleast 3 charactors!' in error %}
+                            <small class="text-danger">{{ error }}</small>
+            {% endif %}
+        </div>
+
+
+        <select class="custom-select mb-3" id="brand" name="brand">
+            <option selected>Select Brand</option>
+            {% for brand in brands %}
+            <option value="{{ brand.name }}"> {{ brand.name }} </option>
+            {% endfor %}
+        </select>
+
+
+            <select class="custom-select mb-3" id="category" name="category">
+                <option selected>Select Category</option>
+                {% for category in categories %}
+                <option value="{{ category.category_name }}"> {{ category.category_name }} </option>
+                {% endfor %}
+            </select>
+
+    
+        
+
+        <div data-mdb-input-init class="form-outline mb-3">
+            
+            <input type="number" id="stock" name="stock" placeholder="stock" required class="form-control" min=0>
+        </div>
+    
+
+
+
+        <div data-mdb-input-init class="form-outline mb-3">
+             
+            <input type="text" id="description" name="description" placeholder="Product caption" maxlength="35" required class="form-control">
+        </div>
+
+
+
+            <div class="form-group">
+                <textarea class="form-control" id="description_detailed" placeholder="Product description" name="description_detailed" rows="2"></textarea>
+              </div>
+
+
+            <div data-mdb-input-init class="form-outline mb-3">
+                
+                <input type="number" id="price" name="price" placeholder="price" required class="form-control" min=0 step="0.01">
+            </div>
+             
+
+            <div class="form-group d-flex flex-column align-items-start">
+               <label for="" class="mx-0 text-left"><strong>Upload images</strong></label>
+              <input type="file" class="form-control-file" id="image_set" name="image_set" multiple required>
+               
+             
+            </div>
+
+    
+        </div>
+        <input type="submit" value="create product +" class="btn btn-success">
+    </form>
+
+<!-- Add this modal HTML code after your form -->
+<div class="modal fade" id="cropperModal" tabindex="-1" role="dialog" aria-labelledby="cropperModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="cropperImage" src="" alt="Cropped Image">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="cropImageBtn">Crop Image</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+  </div>
+  
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+<script>
+    function initCropper(input) {
+        var container = input.closest('.form-group');
+        var cropper = new Cropper(input, {
+            aspectRatio: 16 / 9,
+            viewMode: 2,
+          
+        });
+        container.data('cropper', cropper);
+    
+     
+        input.addEventListener('change', function (e) {
+            var files = e.target.files;
+    
+            if (files && files.length > 0) {
+                var reader = new FileReader();
+    
+                reader.onload = function (event) {
+                  
+                    $('#cropperImage').attr('src', event.target.result);
+                    $('#cropperModal').modal('show');
+                };
+    
+                reader.readAsDataURL(files[0]);
+            }
+        });
+    }
+
+    document.getElementById('image_set').addEventListener('change', function (e) {
+        var input = e.target;
+        initCropper(input);
+    });
+    function getCroppedImages() {
+        document.querySelectorAll('.form-control-file').forEach(function (input) {
+            var cropper = $(input).closest('.form-group').data('cropper');
+            var croppedDataUrl = cropper.getCroppedCanvas().toDataURL();
+            console.log('Cropped Image Data URL:', croppedDataUrl);
+        });
+    }
+    document.getElementById('cropImageBtn').addEventListener('click', function () {
+        getCroppedImages();
+        $('#cropperModal').modal('hide');
+    });
+</script>
+
+
+ 
+{% endblock content %}

@@ -1,0 +1,79 @@
+{% extends "profile.html" %}
+
+{% block exhead %}
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:profile' %}">Personal Information</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:orders' %}">My Orders</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="{% url 'h:add_address' 'x%x23' %}">New Addresses</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-purple h5 bg-light rounded" href="{% url 'h:wallet' %}">wallet</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link text-dark bg-light rounded" href="#my-cart">My Cart</a>
+</li>
+{% endblock exhead %}
+
+            {% block content %}
+            <div class="container border m-5 p-5 bg-white shadow text-center mx-auto">
+                    <div class="container p-2 my-3 head-sec text-white text-center">
+                        <div class="container">
+                        <h1 class="display-4"><strong>My Wallet</strong></h1>
+                        </div>
+                    </div>
+                    
+                    <div class="container">
+                        <div class="row justify-content-center">
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                            <div class="card-body">
+                                <h2 class="card-title text-center text-purple">Current Balance</h2>
+                                <p class="card-text text-center lead">&#8377; {{request.user.wallet.balance | default:"0"}}</p>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                        {% if request.user.wallet.histories %}
+                        <h2 class="mt-5 mb-4 text-center text-purple">Transaction History</h2>
+                        {% endif %}
+                    
+                        <!-- Sample transaction items using Bootstrap cards -->
+                        {% for history in request.user.wallet.histories.all %}
+                        <div class="card mb-3">
+                        <div class="card-body">
+                            <p class="card-text transaction-date">{{history.date.day}}-{{history.date.month}}-{{history.date.year}}</p>
+                            {% if history.amount > 0 %}
+                            <p class="card-text transaction-amount negative text-success"> + {{ history.amount }}</p>
+                            {% else %}
+                            <p class="card-text transaction-amount negative text-danger">  {{ history.amount }}</p>
+                            {% endif %}
+                        </div>
+                      </div>
+                      {% endfor %}
+
+                      {% if not request.user.profile.referred_code %}
+                      <div class="container">
+                        <div data-mdb-input-init class="form-outline mb-3 border p-3 ">
+                          <form action="{% url 'h:apply_referral'%}" method="POST">
+                            {% csrf_token %}
+                          <input type="text" id="referral_code" name="referral_code" maxlength="20" placeholder="Enter the referral code" required class="form-control">
+                          <input type="submit" value="Apply Referral code" class=" text-center text-left my-3 btn head-sec text-white">
+                          
+                          </form>
+                        </div>
+                      </div>
+                      {% endif %}
+                    <p class="h5">My referral code: {{request.user.referral_code.code}}</p>
+                    </div>
+                </div>
+            {% endblock content %}
+
+         
+
+
+
+

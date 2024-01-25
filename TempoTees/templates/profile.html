@@ -1,0 +1,429 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TempoTees</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mukta:300,400,700"> 
+    <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+
+
+    <link rel="stylesheet" href="{% static 'css/aos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/my_style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+
+    
+    
+  </head>
+<body>
+    {% comment %} alert message {% endcomment %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="fade-out fixed-bottom text-center mx-auto text-white w-50 head-sec my-1 py-3" role="alert" data-mdb-color="success" data-mdb-delay="5000" data-mdb-autohide="true">
+        {{ message }}
+       </div>
+    {% endfor %}
+    {% endif %}
+       
+
+  <div class="site-wrap">
+    <header class="head-sec site-navbar" role="banner">
+      <div class="site-navbar-top">
+        <div class="container">
+          <div class="row align-items-center">
+
+            <div class="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
+              {% comment %} <form action="" class="site-block-top-search">
+                <span class="icon icon-search2"></span>
+                <input type="text" class="head-sec-inp form-control border-0" placeholder="Search">
+              </form> {% endcomment %}
+            </div>
+
+            <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
+              <div class="site-logo">
+                <img src="{% static 'images/Logo_png.PNG' %}" class="img-fluid w-25 rounded  shadow" alt="">
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 order-3 order-md-3 text-right">
+              <div class="site-top-icons">
+                <ul>
+                   
+                  <li><a href="{% url 'h:profile' %}"><span class="icon icon-person"></span></a></li>
+                     <li>
+                    <a href="{% url 'h:cart' %}" class="site-cart">
+                      <span class="icon icon-shopping_cart"></span>
+                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count }}</b></span>
+                    </a>
+                  </li>
+                  <li class="d-inline-block d-md-none ml-md-0"><a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a></li>
+                </ul>
+              </div> 
+            </div>
+
+          </div>
+        </div>
+      </div> 
+      <nav class="site-navigation text-right text-md-center" role="navigation">
+        <div class="container">
+          <ul class="site-menu js-clone-nav d-none d-md-block">
+            <li class="has-children active">
+              <a href="{% url 'h:home' %}" class="text-info rounded">Home</a>
+              <ul class="dropdown">
+                {% comment %} <li><a href="#">Menu One</a></li>
+                <li><a href="#">Menu Two</a></li>
+                <li><a href="#">Menu Three</a></li>
+                <li class="has-children"> {% endcomment %}
+                  {% comment %} <a href="#">Sub Menu</a> {% endcomment %}
+                  <ul class="dropdown">
+                    {% comment %} <li><a href="#">Menu One</a></li>
+                    <li><a href="#">Menu Two</a></li>
+                    <li><a href="#">Menu Three</a></li> {% endcomment %}
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="has-children">
+              <a href="#" class="text-light" >Categories</a>
+              <ul class="dropdown">
+                <li><a href="#">Menu One</a></li>
+                <li><a href="#">Menu Two</a></li>
+                <li><a href="#">Menu Three</a></li>
+              </ul>
+            </li>
+            <li><a href="{% url 'h:shop' %}" class="text-light">Shop</a></li>
+             
+            {% if request.user.is_authenticated %}
+            <li><a href="" data-toggle="modal" data-target="#myModal" class="text-light"><b>Logout</b></a></li>
+           
+            {% else %}
+            <li><a href="{% url 'r:login' %}" class="text-light"><b>Login</b></a></li>
+            {% endif %}
+
+            {% if request.user.is_superuser %}
+            <li style="color: red;"><a href="{% url 'a:admin' %}" class="text-light" target="_blank"><b>Dash Board</b></a></li>
+            {% endif %}
+            
+            
+          </ul>
+              <!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+         
+        <h4 class="modal-title mx-auto">Are You Sure?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you want to logout?</p>
+      </div>
+      <div class="modal-footer mx-auto">
+        <a href="{% url 'r:logout' %}" class="btn btn-success text-white" >Yes</a>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+        </div>
+      </nav>
+    </header>
+    <div class="bg-light py-3">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 mb-0"><a href="{% url 'h:home' %}">Home</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Profile</strong></div>
+        </div>
+      </div>
+    </div>  
+
+    {% comment %} =============================================== {% endcomment %}
+    <div class="container-fluid shadow bg-light w-75 border ">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="navbar-collapse">
+                <ul class="navbar-nav mx-auto">
+
+                  {% if messages %}
+                  {% for message in messages %}
+                  <div class="fade-out fixed-bottom text-center mx-auto text-white w-50 head-sec my-1 py-3" role="alert" data-mdb-color="success" data-mdb-delay="5000" data-mdb-autohide="true">
+                      {{ message }}
+                     </div>
+                  {% endfor %}
+                  {% endif %}
+
+                 {% block exhead %}
+                 
+                    <li class="nav-item">
+                        <a class="nav-link text-purple h5 bg-light rounded" href="{% url 'h:profile' %}">Personal Information</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark bg-light rounded" href="{% url 'h:orders' %}">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark bg-light rounded" href="{% url 'h:add_address' 'x%x23' %}">New Addresses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark bg-light rounded" href="{% url 'h:wallet' %}">wallet</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark bg-light rounded" href="{% url 'h:cart' %}">My Cart</a>
+                    </li>
+                  {% endblock exhead %}
+                </ul>
+            </div>
+        </nav>
+        
+    </div>
+    
+    {% comment %} =============================================== {% endcomment %}
+{% block content %}
+    <div class="site-section">
+
+
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h2 class="h2 mb-3 text-black">Personal Informations</h2>
+          </div>
+          <div class="col-md-7">
+
+            <form action="{% url 'h:change_profile' %}" method="POST">
+              {% csrf_token %}
+              <div class="p-3 p-lg-5 border shadow mb-3">
+
+                <div class="col-md-6 p-0 my-0">
+                  <i class="bi bi-person-circle h1 text-left mx-0"></i>
+               </div>
+
+                <div class="form-group row">
+
+                  <div class="col-md-6">
+                    <label for="c_fname" class="text-black">First Name </label>
+                    <input type="text" class="form-control" value="{{ request.user.first_name }}" id="first_name" name="first_name">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="c_lname" class="text-black">Last Name </label>
+                    <input type="text" class="form-control" value="{{ request.user.last_name }}" id="last_name" name="last_name">
+                  </div>
+
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-12">
+                    <label for="c_email" class="text-black">Email</label>
+                    <input type="email" class="form-control" readonly value="{{ request.user.email }}" id="email" name="email" placeholder="">
+                  </div>
+
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-6">
+                      <label class="text-black">category</label>
+                      <div class="form-check">
+                          {% if request.user.profile.gender_category.name == 'Male' %}
+                          <input class="form-check-input" type="radio" checked name="gender" id="male" value="Male">
+                          {% else %}
+                          <input class="form-check-input" type="radio" name="gender" id="male" value="Male">
+                          {% endif %}
+                          <label class="form-check-label" for="male">Male</label>
+                      </div>
+                      <div class="form-check">
+                        {% if request.user.profile.gender_category.name == 'Female' %}
+                        <input class="form-check-input" type="radio" checked name="gender" id="male" value="Female">
+                        {% else %}
+                        <input class="form-check-input" type="radio" name="gender" id="male" value="Female">
+                        {% endif %}
+                          <label class="form-check-label" for="female">Female</label>
+                      </div>
+                      <div class="form-check">
+                        {% if request.user.profile.gender_category.name == 'Kids Commo' %}
+                        <input class="form-check-input" type="radio" checked name="gender" id="male" value="Kids Commo">
+                        {% else %}
+                        <input class="form-check-input" type="radio" name="gender" id="male" value="Kids Commo">
+                        {% endif %}
+                          <label class="form-check-label" for="children">Children</label>
+                      </div>
+                      <div class="form-check">
+                        {% if request.user.profile.gender_category.name == 'Others' %}
+                        <input class="form-check-input" type="radio" checked name="gender" id="male" value="Others">
+                        {% else %}
+                        <input class="form-check-input" type="radio" name="gender" id="male" value="Others">
+                        {% endif %}
+                          <label class="form-check-label" for="others">Others</label>
+                      </div>
+                      {% if 'category required!' == error %}
+                            <small class="text-danger">{{ error }}</small>
+                      {% endif %}
+                  </div>
+                  <div class="col-md-6 mt-3">
+                      <label for="c_email" class="text-black">Age</label>
+                      <input type="number" maxlength="10" value="{{ request.user.profile.age }}" class="form-control" id="age" name="age" placeholder="">
+                    </div>
+              </div>
+              
+
+                <div class="form-group row">
+                  
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <label for="c_email" class="text-black">Mobile Number</label>
+                        <input type="text" maxlength="10" value="{{ request.user.profile.mobile_number }}" class="form-control" id="mobile_number" name="mobile_number" placeholder="">
+                        {% if 'this mobile number is already attached with another account' == error %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endif %}
+                        {% if 'this mobile number is already attached with another account' == error %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endif %}
+                        {% if 'invalid mobile number!' == error %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endif %}
+                      </div>
+                </div>
+
+
+                <div class="form-group row">
+                  <div class="col-lg-12">
+                    <input type="submit" class="btn head-sec text-light btn-lg btn-block" value="Save Changes">
+                  </div>
+                </div>
+
+              </div>
+            </form>
+
+
+          </div>
+          {% endblock content %}
+
+          {% if not avoid %}
+          <div class="col-md-5 ml-auto">
+            
+            {% for address in request.user.profile.address.all %}
+            <a href="{% url 'h:edit_address' address.id %}" class="text-secondary">
+            <div class="p-4 border mb-3">
+              <span class="d-block text-purple h6 text-uppercase">{{ address.name }}</span>
+              <p class="mb-0">{{ address.area_desc }} {{ address.city}}, {{address.state}}-{{ address.pincode }}
+                contact: {{ address.mobile_number }}
+              </p>
+              <a href="{% url 'h:delete_address' address.id %}" class="icon icon-trash btn-sm btn-danger px-2 py-1"></a>
+            </div>
+            </a>
+            {% endfor %}
+
+            <div class="form-group row">
+                <div class="col-lg-12">
+                  <a href="{% url 'h:add_address' 'x%x23' %}" class="btn text-light head-sec btn-lg btn-block">Add address +</a>
+                </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <footer class="head-sec site-footer border-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="row">
+              <div class="col-md-12">
+                <h3 class="footer-heading mb-4 text-white">Tempo Toys</h3>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <ul class="list-unstyled">
+                  <li><a href="#" class="text-light">buy online</a></li>
+                  <li><a href="#" class="text-light">Features</a></li>
+                  <li><a href="{% url 'h:cart' %}" class="text-light">Shopping cart</a></li>
+                  <li><a href="#" class="text-light">Store builder</a></li>
+                </ul>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <ul class="list-unstyled">
+                  <li><a href="#" class="text-light">Mobile commerce</a></li>
+                  <li><a href="#" class="text-light">Dropshipping</a></li>
+                  <li><a href="#" class="text-light">variety products</a></li>
+                </ul>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <ul class="list-unstyled">
+                  <li><a href="#" class="text-light">Point of sale</a></li>
+                  <li><a href="#" class="text-light">Services</a></li>
+                  <li><a href="#" class="text-light">Distributions</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+            <h3 class="footer-heading mb-4 text-light">Promo</h3>
+            <a href="#" class="block-6">
+              <img src="{% static 'images/banner3.jpeg' %}" alt="Image placeholder" class="img-fluid rounded mb-4">
+              <h3 class="font-weight-light text-info mb-0">Finding Your Perfect Toys</h3>
+               
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="block-5 mb-5">
+              <h3 class="footer-heading mb-4 text-light">Contact Info</h3>
+              <ul class="list-unstyled">
+                <li class="address text-light" >203 Vetturoad Nikunjam I park, Kazhakkuttom, Thiruvananthapuram, IND</li>
+                <li class="phone text-light"><a href="#" class="text-light">+2 392 3929 210</a></li>
+                <li class="email"><a href="mailto:shibilallakkat123@gmail.com" class="text-light">shibilallakkat123@gmail.com</a></li>
+              </ul>
+            </div>
+
+            <div class="block-7">
+              {% comment %} <form action="#" method="POST">
+                {% csrf_token %}
+                <label for="email_subscribe" class="footer-heading">Subscribe</label>
+                <div class="form-group">
+                  <input type="text" class="form-control py-4" id="email_subscribe" placeholder="Email">
+                  <input type="submit" class="btn btn-sm btn-primary" value="Send">
+                </div>
+              </form> {% endcomment %}
+            </div>
+          </div>
+        </div>
+        <div class="row pt-5 mt-5 text-center">
+          <div class="col-md-12">
+            <p class="text-light">
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy; tempotees
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </p>
+          </div>
+          
+        </div>
+      </div>
+    </footer>
+  </div>
+
+
+          
+
+  <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+  <script src="{% static 'js/aos.js' %}"></script>
+  <script src="{% static 'js/my_js.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
+
+    
+  </body>
+
+</html>

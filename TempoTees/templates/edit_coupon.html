@@ -1,0 +1,43 @@
+{% extends "admin_panel.html" %}
+{% load widget_tweaks %}
+ 
+  {% block content %}
+  <div class="container-md text-center mx-auto">
+    <h3 class="bg-info text-white shadow p-2">Edit Coupon</h3>
+</div>
+  
+   
+  <div class="card w-100">
+      <div class="card-body text-left">
+        <div class="container text-center">
+            <form action="{% url 'a:edit_coupon' id %}" method="POST">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="{{ form.field1.id_for_label }}" class="border-bottom"><strong>Coupon code</strong></label>
+                {% render_field form.coupon_code class="form-control bg-light" %}
+              </div>
+            <div class="form-group">
+              <label for="{{ form.field1.id_for_label }}" class="border-bottom"><strong>Discount price</strong></label>
+              {% render_field form.discount_price class="form-control bg-light" %}
+            </div>
+            <div class="form-group">
+              <label for="{{ form.field1.id_for_label }}" class="border-bottom"><strong>Min price</strong> </label>
+              {% render_field form.min_price class="form-control bg-light" %}
+            </div>
+            <div class="form-group">
+              <label for="{{ form.field1.id_for_label }}" class="border-bottom"><strong>valid days</strong> </label>
+              {% render_field form.days_valid class="form-control bg-light" %}
+            </div>
+
+              <input type="submit" value="Save changes" class="btn btn-info">
+            </form>
+          </div>
+     </div>
+     
+       
+  
+  
+   
+  
+  
+  {% endblock content %}

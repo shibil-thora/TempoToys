@@ -1,0 +1,61 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+
+    <div class="container-fluid text-center">
+        <div class="row-md">
+            <div class="col-md rounded bg-light py-3 shadow">
+
+              <table class="table table-bordered table-hover mt-3">
+                <thead class="thead-info">
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Full Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Date Created</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+            
+                        {% if user.is_superuser %}
+                        <td class="text-success">Super Admin</td>
+                        {% elif user.is_staff %}
+                        <td class="text-success">Staff</td>
+                        {% else %}
+                        <td class="text-primary"><strong>User</strong></td>
+                        {% endif %}
+            
+                        {% if user.is_active %}
+                        <td class="text-success">Active</td>
+                        {% else %}
+                        <td class="text-danger">Not Active</td>
+                        {% endif %}
+            
+                        {% if user.is_active %}
+                        <td>
+                            <a href="{% url 'a:block' user.id %}" class="btn btn-danger btn-sm">Block</a>
+                        </td>
+                        {% else %}
+                        <td>
+                            <a href="{% url 'a:activate' user.id %}" class="btn btn-success btn-sm">Activate</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,25 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+
+ 
+<div class="card w-100">
+    <div class="card-body text-left">
+      <h5 class="card-title">Add category</h5>
+      <form action="{% url 'a:add_category' %}" method="POST">
+            {% csrf_token %} 
+            <div data-mdb-input-init class="form-outline mb-3">
+            <p class="text-left m-0"><small>category name</small></p>
+            <input type="text" id="category_name" name="category_name" placeholder="" required class="form-control">
+            </div>
+            </div>
+            <input type="submit" value="creat +" class="btn btn-success">
+    </form>
+   </div>
+   
+     
+
+
+ 
+
+
+{% endblock content %}

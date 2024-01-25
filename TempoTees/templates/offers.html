@@ -1,0 +1,71 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+<div class="container mt-4">
+
+    <div class="row">
+        <!-- Product Offers Table -->
+        <div class="col-md-12">
+            <a href="{% url 'a:add_product_offer' %}" class="btn btn-success my-3 rounded-0">add +</a>
+            <h3 class="bg-info text-white shadow p-2">Product Offers</h3>
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="thead-info">
+                    <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col">Percentage</th>
+                        <th scope="col">edit</th>
+                        <th scope="col">delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Add your product offer data here -->
+                    {% for offer in product_offers %}
+                    <tr>
+                        <td>{{ offer.product.product_name }}</td>
+                        <td> {{ offer.offer_percent }} %</td>
+                        <td><a href="{% url 'a:edit_product_offer' offer.id %}" class="gd-pencil text-primary"></a></td>
+                        <td><a href="{% url 'a:delete_product_offer' offer.id %}" class="gd-trash text-danger"></a></td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Category Offers Table -->
+        <div class="col-md-12 mt-4">
+            <a href="{% url 'a:add_category_offer' %}" class="btn btn-success my-3 rounded-0">add +</a>
+            <h3 class="bg-info text-white shadow p-2">Category Offers</h3>
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="thead-info">
+                    <tr>
+                        <th scope="col">Category</th>
+                        <th scope="col">Percentage</th>
+                        <th scope="col">edit</th>
+                        <th scope="col">delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Add your category offer data here -->
+                    {% for offer in category_offers %}
+                    {% comment %} <tr>
+                        <td>{{ offer.product.product_name }}</td>
+                        <td> {{ offer.offer_percent }} %</td>
+                        <td><a href="{% url 'a:edit_product_offer' offer.id %}" class="gd-pencil text-primary"></a></td>
+                        <td><a href="{% url 'a:delete_product_offer' offer.id %}" class="gd-trash text-danger"></a></td>
+                    </tr> {% endcomment %}
+                    <tr>
+                        <td>{{ offer.category.category_name }}</td>
+                        <td>{{ offer.offer_percent }} %</td>
+                        <td><a href="{% url 'a:edit_category_offer' offer.id %}" class="gd-pencil text-primary"></a></td>
+                        <td><a href="{% url 'a:delete_category_offer' offer.id %}" class="gd-trash text-danger"></a></td>
+                    </tr>
+                    {% endfor %}
+                    
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+

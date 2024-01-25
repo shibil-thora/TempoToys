@@ -1,0 +1,88 @@
+
+{% extends "checkout.html" %}
+{% load static %}
+{% block content %}
+<div class="row my-5">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-dark">Order Summary</h3>
+
+                <!-- Alternative Order Details Table -->
+                <table class="table table-striped text-center">
+                    <thead class="thead head-sec">
+                        <tr class="text-white">
+                            <th scope="col">Item</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Order Item 1 -->
+                        {% for cart in carts %}
+                        <tr>
+                            <td> {{cart.product.product_name}} </td>
+                            <td>{{ cart.quantity }}</td>
+                            <td>&#8377; {{ cart.product.price }}</td>
+                            <td>&#8377; {{ cart.total_price }}</td>
+                        </tr>
+                        {% endfor %}
+
+
+                        <!-- Total Row -->
+                        <tr class="table-dark">
+                            <td colspan="3" class="text-right text-dark"><strong>Total:</strong></td>
+                            <td class="text-dark"><strong>{{ total }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- End Alternative Order Details Table -->
+                <br>
+                {% if payment == 'wallet' %}
+                <form action="{% url 'h:payment_wallet' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="div text-center">
+                    <input type="submit" class="btn head-sec text-white" value="Confirm Order">
+                    </div>
+                </form>
+                {% elif payment %}
+                <!-- Pay Button -->
+                <div class="container text-center btn head-sec">
+                <form action="{% url 'h:payment_status' %}" method="POST">
+                    {% csrf_token %}
+                    <script
+                        src="https://checkout.razorpay.com/v1/checkout.js"
+                        data-key="{{ data_key }}"  
+                        data-amount="{{ payment.amount }}"  
+                        data-currency="{{ payment.currency }}" 
+                        data-order_id="{{ payment.id }}" 
+                        data-buttontext="Pay Online"
+                        data-name="Tempo Toys"
+                        data-description="Have a nice day"
+                        data-image="{% static 'images/Logo_png.PNG' %}"
+                        data-prefill.name="{{ payment.name }}"
+                        data-prefill.email="you@example.com"
+                        data-theme.color="#471290"
+                    ></script>
+                    <input type="hidden" custom="Hidden Element" name="hidden"/>
+                </form>
+                </div>
+                {% else %}
+                <form action="{% url 'h:payment_COD' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="div text-center">
+                    <input type="submit" class="btn head-sec text-white" value="Confirm Order">
+                    </div>
+                </form>
+                
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+ 

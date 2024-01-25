@@ -1,0 +1,423 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Cart</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Mukta:300,400,700"> 
+    <link rel="stylesheet" href="{% static 'fonts/icomoon/style.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/owl.theme.default.min.css' %}">
+
+
+    <link rel="stylesheet" href="{% static 'css/aos.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/my_style.css' %}">
+    
+    
+  </head>
+<body>
+    {% comment %} alert message {% endcomment %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="fade-out fixed-bottom text-center mx-auto text-white w-50 head-sec my-1 py-3" role="alert" data-mdb-color="success" data-mdb-delay="5000" data-mdb-autohide="true">
+        {{ message }}
+       </div>
+    {% endfor %}
+    {% endif %}
+  
+
+       
+
+  <div class="site-wrap">
+    <header class="head-sec site-navbar" role="banner">
+      <div class="site-navbar-top">
+        <div class="container">
+          <div class="row align-items-center">
+
+            <div class="col-6 col-md-4 order-2 order-md-1 site-search-icon text-left">
+              {% comment %} <form action="" class="site-block-top-search">
+                <span class="icon icon-search2"></span>
+                <input type="text" class="head-sec-inp form-control border-0" placeholder="Search">
+              </form> {% endcomment %}
+            </div>
+
+            <div class="col-12 mb-3 mb-md-0 col-md-4 order-1 order-md-2 text-center">
+              <div class="site-logo">
+                <img src="{% static 'images/Logo_png.PNG' %}" class="img-fluid w-25 rounded  shadow" alt="">
+              </div>
+            </div>
+
+            <div class="col-6 col-md-4 order-3 order-md-3 text-right">
+              <div class="site-top-icons">
+                <ul>
+                   
+                  <li><a href="{% url 'h:profile' %}"><span class="icon icon-person"></span></a></li>
+                    <li>
+                    <a href="{% url 'h:cart' %}" class="site-cart">
+                      <span class="icon icon-shopping_cart"></span>
+                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count }}</b></span>
+                    </a>
+                  </li>
+                  <li class="d-inline-block d-md-none ml-md-0"><a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a></li>
+                </ul>
+              </div> 
+            </div>
+
+          </div>
+        </div>
+      </div> 
+      <nav class="site-navigation text-right text-md-center" role="navigation">
+        <div class="container">
+          <ul class="site-menu js-clone-nav d-none d-md-block">
+            <li class="has-children active">
+              <a href="{% url 'h:home' %}" class="text-info rounded">Home</a>
+              <ul class="dropdown">
+                {% comment %} <li><a href="#">Menu One</a></li>
+                <li><a href="#">Menu Two</a></li>
+                <li><a href="#">Menu Three</a></li>
+                <li class="has-children"> {% endcomment %}
+                  {% comment %} <a href="#">Sub Menu</a> {% endcomment %}
+                  <ul class="dropdown">
+                    {% comment %} <li><a href="#">Menu One</a></li>
+                    <li><a href="#">Menu Two</a></li>
+                    <li><a href="#">Menu Three</a></li> {% endcomment %}
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="has-children">
+              <a href="#" class="text-light" >Categories</a>
+              <ul class="dropdown">
+                <li><a href="#">Menu One</a></li>
+                <li><a href="#">Menu Two</a></li>
+                <li><a href="#">Menu Three</a></li>
+              </ul>
+            </li>
+            <li><a href="{% url 'h:shop' %}" class="text-light">Shop</a></li>
+             
+            {% if request.user.is_authenticated %}
+            <li><a href="" data-toggle="modal" data-target="#myModal" class="text-light"><b>Logout</b></a></li>
+           
+            {% else %}
+            <li><a href="{% url 'r:login' %}" class="text-light"><b>Login</b></a></li>
+            {% endif %}
+
+            {% if request.user.is_superuser %}
+            <li style="color: red;"><a href="{% url 'a:admin' %}" class="text-light" target="_blank"><b>Dash Board</b></a></li>
+            {% endif %}
+            
+            
+          </ul>
+              <!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+         
+        <h4 class="modal-title mx-auto">Are You Sure?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Do you want to logout?</p>
+      </div>
+      <div class="modal-footer mx-auto">
+        <a href="{% url 'r:logout' %}" class="btn btn-success text-white" >Yes</a>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="bg-light py-3">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 mb-0"><a href="{% url 'h:home' %}">Home</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Cart</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md-12">
+            <div class="site-blocks-table">
+              
+              {% if request.user.cart.all %}
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th class="product-thumbnail">Image</th>
+                    <th class="product-name">Product</th>
+                    <th class="product-price">Price</th>
+                    <th class="product-quantity">Quantity</th>
+                    <th class="product-total">Total</th>
+                    <th class="product-remove">Remove</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  {% for cart in carts %}
+                  <tr>
+                    
+                    <td class="product-thumbnail">
+                      {% for img in cart.product.images.all %}
+                      {% if forloop.first %}
+                      <img src="{{ img.image.url }}" class="w-50" alt="Image" class="img-fluid">
+                      {% endif %}
+                      {% endfor %}
+                    </td>
+                    
+                    <td class="product-name">
+                      <h2 class="h5 text-black">{{ cart.product.product_name }}</h2>
+                    </td>
+                    <td>&#8377; {{ cart.product.price }}</td>
+                    <td>
+                      <div class="input-group mb-3 mx-auto" style="max-width: 120px;">
+                        <div class="input-group-prepend">
+                          <button onclick="minusOne({{cart.id}})" class="btn head-sec text-light ">&minus;</button>
+                        </div>
+                        <input type="text" id="qty-input{{cart.id}}" disabled class="form-control text-center" value="{{ cart.quantity }}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        <div class="input-group-append">
+                          <button id="addCartBtn" onclick="addOne({{cart.id}})" cart-id="{{ cart.id }}" class="btn head-sec text-light ">&plus;</button>
+                        </div>
+                      </div>
+
+                      
+
+                      
+
+                    </td>
+                    <td id="total-price{{cart.id}}">&#8377; {{cart.total_price}}</td>
+                    <td><a href="{% url 'h:remove_from_cart' cart.id %}" class="btn head-sec text-light btn-sm">X</a></td>
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+              {% else %}
+              <div class="container-fluid text-center">
+              <img src="{% static 'images/empy_cart.png' %}" alt="empty cart">
+              </div>
+              {% endif %}
+
+            </div>
+          </div>
+        </div>
+
+      {% if request.user.cart.all %}
+        <div class="row">
+          <div class="col-md-6">
+            <div class="row mb-5">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <a href="{% url 'h:clear_cart' %}" class="btn head-sec text-light btn-sm btn-block">Clear Cart</a>
+              </div>
+              <div class="col-md-6">
+                <button class="btn head-sec text-light btn-sm btn-block">Continue Shopping</button>
+              </div>
+            </div>
+
+            <div class="row">
+               
+            </div>
+          </div>
+
+          <div class="col-md-6 pl-5 border p-3 ">
+            <div class="row justify-content-center">
+              <div class="col-md-7">
+                <div class="row">
+                  <div class="col-md-12 text-center border-bottom mb-5">
+                    <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <span class="text-black">Net amount</span>
+                  </div>
+                  
+                  <div class="col-md-6 text-right">
+                    <strong class="text-black" id='sum-without-shipp'>&#8377; {{ sum_without_shipp }}</strong>
+                  </div>
+
+                  <div class="col-md-6">
+                    <span class="text-black">Shipping</span>
+                  </div>
+                  
+                  <div class="col-md-6 text-right">
+                    <strong class="text-black">&#8377; {{ 20 }}</strong>
+                  </div>
+
+                </div>
+                <div class="row mb-5">
+                  <div class="col-md-6">
+                    <span class="text-black">Total</span>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <strong class="text-black" id='sum'><strong> &#8377; {{ sum  }} </strong></strong>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <a class="btn head-sec text-light btn-lg py-3 btn-block" href="{% url 'h:checkout' %}">Proceed To Checkout</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+   
+    <footer class="head-sec site-footer border-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="row">
+              <div class="col-md-12">
+                <h3 class="footer-heading mb-4 text-white">Tempo Toys</h3>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <ul class="list-unstyled">
+                  <li><a href="#" class="text-light">buy online</a></li>
+                  <li><a href="#" class="text-light">Features</a></li>
+                  <li><a href="{% url 'h:cart' %}" class="text-light">Shopping cart</a></li>
+                  <li><a href="#" class="text-light">Store builder</a></li>
+                </ul>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <ul class="list-unstyled">
+                  <li><a href="#" class="text-light">Mobile commerce</a></li>
+                  <li><a href="#" class="text-light">Dropshipping</a></li>
+                  <li><a href="#" class="text-light">variety products</a></li>
+                </ul>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <ul class="list-unstyled">
+                  <li><a href="#" class="text-light">Point of sale</a></li>
+                  <li><a href="#" class="text-light">Services</a></li>
+                  <li><a href="#" class="text-light">Distributions</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+            <h3 class="footer-heading mb-4 text-light">Promo</h3>
+            <a href="#" class="block-6">
+              <img src="{% static 'images/banner3.jpeg' %}" alt="Image placeholder" class="img-fluid rounded mb-4">
+              <h3 class="font-weight-light text-info mb-0">Finding Your Perfect Toys</h3>
+               
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="block-5 mb-5">
+              <h3 class="footer-heading mb-4 text-light">Contact Info</h3>
+              <ul class="list-unstyled">
+                <li class="address text-light" >203 Vetturoad Nikunjam I park, Kazhakkuttom, Thiruvananthapuram, IND</li>
+                <li class="phone text-light"><a href="#" class="text-light">+2 392 3929 210</a></li>
+                <li class="email"><a href="mailto:shibilallakkat123@gmail.com" class="text-light">shibilallakkat123@gmail.com</a></li>
+              </ul>
+            </div>
+
+            <div class="block-7">
+              {% comment %} <form action="#" method="POST">
+                {% csrf_token %}
+                <label for="email_subscribe" class="footer-heading">Subscribe</label>
+                <div class="form-group">
+                  <input type="text" class="form-control py-4" id="email_subscribe" placeholder="Email">
+                  <input type="submit" class="btn btn-sm btn-primary" value="Send">
+                </div>
+              </form> {% endcomment %}
+            </div>
+          </div>
+        </div>
+        <div class="row pt-5 mt-5 text-center">
+          <div class="col-md-12">
+            <p class="text-light">
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy; tempotees
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </p>
+          </div>
+          
+        </div>
+      </div>
+    </footer>
+  </div>
+
+
+          
+
+  <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
+  <script src="{% static 'js/aos.js' %}"></script>
+  <script src="{% static 'js/my_js.js' %}"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
+
+  {% if request.user.cart.all %}
+  <script>
+    function addOne(cartId)  {
+        fetch(`/add_cart_quantity/${cartId}`)
+        .then(response => {
+          if(!response.ok) {
+            throw new Error(`Http error! Status: ${response.status} `);
+          }
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById(`qty-input${cartId}`).value = data.quantity;
+          document.getElementById(`total-price${cartId}`).innerHTML = "&#8377; " + data.total_price;
+          document.getElementById('sum').innerHTML = "<strong> &#8377; " + data.sum + " </strong>";
+          document.getElementById('sum-without-shipp').innerHTML = "&#8377; " + data.sum_without_shipp;
+        })
+        .catch(error => {
+          console.error('Fetch error: ', error);
+        });
+      };
+
+      function minusOne(cartId)  {
+        fetch(`/less_cart_quantity/${cartId}`)
+        .then(response => {
+          if(!response.ok) {
+          throw new Error(`Http error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+            document.getElementById(`qty-input${cartId}`).value = data.quantity;
+            document.getElementById(`total-price${cartId}`).innerHTML = "&#8377; " + data.total_price;
+            document.getElementById('sum').innerHTML = "<strong> &#8377; " + data.sum + " </strong>";
+            document.getElementById('sum-without-shipp').innerHTML = "&#8377; " + data.sum_without_shipp;
+        })
+        .catch(error => {
+          console.error('Fetch error: ', error);
+        });
+    };
+    
+  </script>
+  {% endif %}
+    
+  </body>
+
+</html>

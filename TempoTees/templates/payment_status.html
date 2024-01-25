@@ -1,0 +1,16 @@
+
+{% extends "checkout.html" %}
+{% load static %}
+{% block content %}
+ 
+{% if status %}
+<h2>payment success</h2>
+{% else %}
+<h2>payment Failed</h2>
+{% endif %}
+
+
+
+{% endblock content %}
+
+ 

@@ -1,0 +1,33 @@
+{% extends "admin_panel.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container-md text-center mx-auto">
+    <h3 class="bg-info text-white shadow p-2">Edit Product Offer</h3>    
+</div>
+  
+   
+  <div class="card w-100">
+      <div class="card-body text-left">
+        <div class="container text-center">
+
+            <form action="{% url 'a:edit_category_offer' offer.id %}" method="POST">
+              {% csrf_token %}
+            <div class="form-group">
+              <label for="{{ form.field1.id_for_label }}" class="border-bottom"><strong>Discount rate (percentage)</strong></label>
+              {% render_field form.offer_percent class="form-control" %}
+              {% if messages %}
+              {% for message in messages %}
+              <small class="text-danger text-left">{{message}}</small>
+              {% endfor %}
+              {% endif %}
+            </div>
+           
+             
+
+              <input type="submit" value="Save changes" class="btn btn-info">
+            </form>
+
+          </div>
+     </div>
+{% endblock content %}
+

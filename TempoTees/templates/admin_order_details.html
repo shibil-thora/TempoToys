@@ -1,0 +1,51 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+
+{% for item in order.order_items.all %}
+<div class="row mb-3">
+    <div class="col-md-4">
+        {% for img in item.item.images.all %}
+        {% if forloop.first %}
+        <img src="{{ img.image.url }}" alt="{{ item.item.product_name }}" class="img-fluid">
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="col-md-8">
+        <h4>{{ item.item.product_name }}</h4>
+        <p>Quantity: <strong>{{ item.quantity }}</strong></p>
+    </div>
+</div>
+{% endfor %}
+
+<div class="row mb-3">
+<div class="col-md-12">
+    <h5>Order Notes:</h5>
+    <p>{{ order.order_notes }}</p>
+</div>
+</div>
+
+<div class="row mb-3">
+<div class="col-md-6">
+    <h5>User Details:</h5>
+    <div class="container-fluic">
+    <span class="d-block text-purple h6 text-uppercase">{{ address.name }}</span>
+              <p class="mb-0">{{ address.area_desc }} {{ address.city}}, {{address.state}}-{{ address.pincode }}
+                contact: {{ address.mobile_number }}
+    </p>
+    </div>
+    <br>
+    <p><strong>Userame:</strong> {{ order.user.username }}</p>
+    <!-- Add other user details as needed -->
+</div>
+<div class="col-md-6">
+    <h5>Order Details:</h5>
+    <p><strong>Total Amount:</strong> {{ order.total_amount }}</p>
+    <p><strong>Order Status:</strong> {{ order.order_status }}</p>
+    <p><strong>Payment mode:</strong> {{ order.payment_mode.mode }}</p>
+</div>
+</div>
+</div>
+
+
+
+{% endblock content %}

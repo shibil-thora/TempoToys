@@ -1,0 +1,2 @@
+RAZOR_KEY_ID = 'rzp_test_2fp021CXX20XIo'
+RAZOR_KEY_SECRET = 'rLDAecgvCT3qPoOVBKxAKmes'

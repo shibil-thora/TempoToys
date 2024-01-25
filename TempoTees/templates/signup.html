@@ -1,0 +1,125 @@
+
+ {% load static %}
+ <!DOCTYPE html>
+ <html lang="en">
+   <head>
+     <!-- Title -->
+     <title>Login | TempoToys</title>
+ 
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+     <meta http-equiv="x-ua-compatible" content="ie=edge">
+ 
+     <!-- Favicon -->
+     <link rel="shortcut icon" href="{% static 'images/Logo_png.PNG' %}">
+ 
+     <!-- Template -->
+     <link rel="stylesheet" href="{% static 'public/graindashboard/css/graindashboard.css' %}">
+     <link rel="stylesheet" href="{% static 'css/my_style.css' %}">
+   </head>
+ 
+   <body class="">
+ 
+     <main class="main">
+ 
+       <div class="content">
+ 
+             <div class="container-fluid pb-5">
+ 
+                 <div class="row justify-content-md-center">
+                     <div class="card-wrapper col-12 col-md-4 mt-5">
+                         <div class="brand text-center mb-3">
+                            
+                         </div>
+                         <div class="card shadow rounded p-3">
+                             <div class="card-body">
+                                 <h4 class="card-title">Register</h4>
+
+                                         <form action="{% url 'r:signup' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" id="username" name="username" class="form-control form-control-lg bg-white fs-6" placeholder="username" required>
+                        <div class="container text-danger">
+                            {% if 'username already exists' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                            {% if 'username must be atleast 5 charecters' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" id="email" name="email" class="form-control form-control-lg bg-white fs-6" placeholder="email address" required>
+                        <div class="container text-danger">
+                            {% if 'email already exists' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                            {% if 'invalid email format!' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                            {% if 'username should be alphanumeric' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" name="first_name" class="form-control form-control-lg bg-white fs-6" placeholder="fist name" required>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" id="last_name" name="last_name" class="form-control form-control-lg bg-white fs-6" placeholder="last name">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="password" id="pass1" name="password1" class="form-control form-control-lg bg-white fs-6" placeholder="password" required>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="password" id="pass2" name="password2" class="form-control form-control-lg bg-white fs-6" placeholder="confirm password" required>
+                        <div class="container text-danger">
+                            {% if 'passwords do not match' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                            
+                            {% if 'passwords must be atleast 8 characters' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                            {% if 'passwords must contain letters and numbers' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
+                            
+                        </div>
+                    </div>
+                
+                    <button class="btn head-sec btn-block text-white" type="submit">signup</button>
+
+                 
+                 
+                    </form>
+                                 </form>
+
+                             </div>
+                         </div>
+                         <footer class="footer mt-3">
+                             <div class="container-fluid">
+                                 <div class="footer-content text-center small">
+                                     <span class="text-muted">&copy; 2023 TempoToys Reserved.</span>
+                                 </div>
+                             </div>
+                         </footer>
+                     </div>
+                 </div>
+ 
+ 
+ 
+             </div>
+ 
+       </div>
+     </main>
+ 
+     <script src="{% static 'public/graindashboard/js/graindashboard.js' %}"></script>
+     <script src="{% static 'public/graindashboard/js/graindashboard.vendor.js' %}"></script>
+   </body>
+ </html>

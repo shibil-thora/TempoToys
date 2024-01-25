@@ -1,0 +1,49 @@
+{% extends "admin_panel.html" %}
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+    <div class="fade-out fixed-bottom text-center mx-auto text-white w-50 bg-danger my-1 py-3" role="alert" data-mdb-color="success" data-mdb-delay="5000" data-mdb-autohide="true">
+        {{ message }}
+       </div>
+    {% endfor %}
+    {% endif %}
+ 
+    <div class="container mt-4">
+        <div class="container-md text-center mx-auto">
+            <h3 class="bg-info text-white shadow p-2">Coupons</h3>
+        </div>
+        <table class="table table-hover shadow table-responsive-md" style="border: 2px solid #dee2e6;">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col"  >Coupon Code</th>
+              <th scope="col"  >Discount Rate</th>
+              <th scope="col"  >Min Price</th>
+              <th scope="col"  >Created Date</th>
+              <th scope="col"  >Valid Days</th>
+              <th scope="col"  >Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            {% for coupon in coupons %}
+            <tr>
+              <td style="border: 2px solid #dee2e6"><a href="{% url 'a:edit_coupon' coupon.id %}" style="text-decoration: underline;"><strong>{{ coupon.coupon_code }}</strong></a></td>
+              <td style="border: 2px solid #dee2e6">{{ coupon.discount_price }} &#8377;</td>
+              <td style="border: 2px solid #dee2e6">{{ coupon.min_price }} &#8377;</td>
+              <td style="border: 2px solid #dee2e6">{{ coupon.created_date.day }}-{{ coupon.created_date.month }}-{{ coupon.created_date.year }}</td>
+              <td style="border: 2px solid #dee2e6">{{ coupon.days_valid }}</td>
+              <td style="border: 2px solid #dee2e6"> <a href="{% url 'a:delete_coupon' coupon.id %}"class="text-danger"><i class="gd-trash btn btn-danger"></i></a></td>
+            </tr>
+            {% endfor %}
+
+            <!-- Add more rows as needed -->
+          </tbody>
+        </table>
+        <a href="{% url 'a:add_coupon' %}" class="btn btn-success my-2">add +</a>
+      </div>
+
+ 
+
+
+{% endblock content %}

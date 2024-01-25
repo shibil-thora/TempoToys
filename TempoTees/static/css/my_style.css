@@ -1,0 +1,107 @@
+.head-sec  {
+    background-color: #471290
+}
+
+.head-sec-clicked  {
+    background-color: rgb(167, 60, 194)
+}
+
+.text-purple  {
+    color: #471290 !important;
+}
+
+.head-sec-inp  {
+    background-color: #9c0da900;
+}
+
+.head-sec-inp::placeholder  {
+   color: rgba(215, 214, 214, 0.694);
+}
+
+.foot-bg  {
+    background-color: #00ff112c;
+}
+
+@keyframes fadeOut {
+    from {opacity: 1;}
+    to {opacity: 0;}
+ }
+ 
+ .fade-out {
+    animation: fadeOut 5s forwards;
+ }
+
+.nav-pills li a:hover  {
+    background-color:#A40A5D;
+    border-radius: 0;
+    color:white
+}
+
+.main-side  {
+    height: 100px !important;
+}
+ 
+
+.need-bg  {
+    background-color: #A40A5D;
+}
+
+@media (max-width: 576px) {
+    .px-4 {
+        padding: 0.5rem !important;
+    }
+}
+
+
+
+.head-card  {
+    background-color: #28a745!important;
+}
+
+.head-card-edit  {
+    background-color: #ffc107!important;
+}
+
+.icon-truck  {
+    color:  #5c1f6b;
+}
+
+ /* Add your custom styles here */
+ body {
+    background-color: #f8f9fa;
+}
+
+h2 {
+    color: #007bff;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.product-thumbnail img {
+    max-width: 80px;
+    height: auto;
+}
+
+.product-quantity .input-group {
+    max-width: 100px;
+    margin: auto;
+}
+
+.product-quantity .btn {
+    padding: 0.375rem 0.75rem;
+}
+
+/* Remove borders between columns */
+.table-bordered th,
+.table-bordered td {
+    border: none;
+    outline: none;
+}
+
+/* Optional: Add some padding to the table cells */
+.table td,
+.table th {
+    padding: 0.75rem;
+}
