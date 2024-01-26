@@ -20,7 +20,7 @@ class referral_code(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(TempoUser, on_delete=models.CASCADE, related_name='profile')
-    mobile_number = models.CharField(null=True)
+    mobile_number = models.CharField(max_length=200, null=True)
     gender_category = models.ForeignKey(Gender, null=True, on_delete=models.SET_NULL)
     age = models.IntegerField(null=True)
     referred_code = models.ForeignKey(referral_code, on_delete=models.CASCADE, null=True)
@@ -42,7 +42,7 @@ class Address(models.Model):
     city = models.CharField(max_length=50)
     state = models.ForeignKey(State, null=True, on_delete=models.SET_NULL)
     mobile_number = models.CharField(max_length=10)
-    is_default = models.CharField(null=True)
+    is_default = models.BooleanField(null=True)
     pincode = models.CharField(max_length=6, null=True)
 
     def __str__(self):
