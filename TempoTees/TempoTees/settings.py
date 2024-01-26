@@ -84,12 +84,8 @@ WSGI_APPLICATION = 'TempoTees.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tempotees',
-        'USER': 'postgres',
-        'PASSWORD': '8912',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
