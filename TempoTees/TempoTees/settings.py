@@ -126,13 +126,14 @@ USE_TZ = True
 
 # the additional settings added by me will be here -------------------------------
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 # TEMPLATE_DEBUG = True
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = '/home/ubuntu/TempoToys/TempoTees/staticfiles/'
+
 
 
 LOGIN_REDIRECT_URL = 'h:home'
