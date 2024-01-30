@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_4v6cv^o4@jbqfxp9xelytplbvi&m$a@=g-h6z3btm1vb-zyy5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['65.0.99.30','172.31.12.253', 'ec2-65-0-99-30.ap-south-1.compute.amazonaws.com', 'localhost', ]
 
@@ -130,7 +130,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-TEMPLATE_DEBUG = True
+# TEMPLATE_DEBUG = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -151,7 +151,6 @@ EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
 #razor pay settings
 RAZOR_KEY_ID = RAZOR_KEY_ID
 RAZOR_KEY_SECRET = RAZOR_KEY_SECRET
-DEBUG = False
 
 
 # ---------------------------------------------------------------------------------
