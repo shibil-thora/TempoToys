@@ -132,8 +132,7 @@ STATICFILES_DIRS = (
 )
 # TEMPLATE_DEBUG = True
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+STATIC_ROOT = '/home/ubuntu/TempoToys/TempoTees/staticfiles'
 
 LOGIN_REDIRECT_URL = 'h:home'
 LOGOUT_REDIRECT_URL = 'r:login'
