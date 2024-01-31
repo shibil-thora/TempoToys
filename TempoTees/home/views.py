@@ -869,7 +869,7 @@ def success_order(request):
 @never_cache
 def cancel_order_item(request, item_id, order_id):
     if request.user.is_authenticated:
-        # try:
+        try:
             order = Orders.objects.get(id=order_id)
             item = OrderItem.objects.get(id=item_id)
             item.is_listed = False
@@ -898,7 +898,7 @@ def cancel_order_item(request, item_id, order_id):
                     print('comes here')
                 order.save()
                 return redirect('h:order_details', pk=order_id)
-        # except:
+        except:
                 return redirect('h:orders')
 
     return redirect('r:login')

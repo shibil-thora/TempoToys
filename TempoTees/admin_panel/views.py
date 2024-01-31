@@ -30,6 +30,7 @@ from .forms import CouponForm, ProductOfferForm, CategoryOfferForm
 from django.db.models.functions import ExtractDay, ExtractWeek
 from home.models import Orders
 from home.models import PaymentModes
+from .models import Wallet, WalletHistory
 
 #=================================== DASH BOARD VIEW ===================================#
 @never_cache
@@ -600,6 +601,19 @@ def cancel_order(request, pk):
             order = Orders.objects.get(id=pk)
             if order.order_status == OrderStatus.objects.get(status='pending'):
                 order.order_status = OrderStatus.objects.get(status='cancelled')
+                wallet = None
+                try:
+                    wallet = request.user.wallet
+                except:
+                    wallet = Wallet.objects.create(user=request.user, balance=0)
+                
+                wallet.balance += order.total_amount
+                wallet.save()
+                WalletHistory.objects.create(
+                    wallet=wallet,
+                    amount=order.total_amount,
+                    payment_mode=order.payment_mode.mode,
+                )
                 order.save()
                 for item in order.order_items.all():
                     product = item.item
