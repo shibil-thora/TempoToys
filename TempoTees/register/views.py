@@ -135,13 +135,15 @@ def otp(request):
         if not otp == otp_obj.now():
             messages.success(request, 'invalid otp! sign in again')
             return redirect('r:signup')
-
-        new_user = User.objects.create_user(username=temp_username, email=temp_email, password=temp_password)
-        new_user.first_name = temp_first_name
-        new_user.last_name = temp_last_name
-        code = 'Ab' + str(random.randint(0,1000)) + 'Tb'
-        referral_code.objects.create(user=new_user, code=code)
-        new_user.save()
+        try:
+            new_user = User.objects.create_user(username=temp_username, email=temp_email, password=temp_password)
+            new_user.first_name = temp_first_name
+            new_user.last_name = temp_last_name
+            code = 'Ab' + str(random.randint(0,1000)) + 'Tb'
+            referral_code.objects.create(user=new_user, code=code)
+            new_user.save()
+        except:
+            return redirect('r:signup')
         
         return redirect('r:login')
     return render(request, 'otp.html')
