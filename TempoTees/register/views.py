@@ -32,7 +32,10 @@ def login_user(request):
             username = request.POST['username']
             password = request.POST.get('password')
             if '@' and '.' in username:
-                username = User.objects.get(email=username).username
+                try:
+                    username = User.objects.get(email=username).username
+                except:
+                    user = None
 
             user = authenticate(username=username, password=password)
             if user is not None:
