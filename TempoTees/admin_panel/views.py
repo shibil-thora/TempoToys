@@ -603,9 +603,9 @@ def cancel_order(request, pk):
                 order.order_status = OrderStatus.objects.get(status='cancelled')
                 wallet = None
                 try:
-                    wallet = request.user.wallet
+                    wallet = order.user.wallet
                 except:
-                    wallet = Wallet.objects.create(user=request.user, balance=0)
+                    wallet = Wallet.objects.create(user=order.user, balance=0)
                 
                 wallet.balance += order.total_amount
                 wallet.save()
