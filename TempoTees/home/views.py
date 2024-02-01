@@ -379,7 +379,6 @@ def payment_status(request):
         order_status = response_payment['status']
         response_payment['name'] = 'temporary user'
         user_obj = User.objects.get(id=user_id_gb)
-        total_amount =  Cart.objects.filter(user=user_obj).aggregate(total=Sum('total_price'))['total'] + 20
         if order_status == 'created': 
             order = Orders.objects.create(
             address=address_gb,
@@ -416,6 +415,7 @@ def payment_status(request):
         order_id = 'BoH659B' + str(random.randint(10000, 99999))
         order_status = 'created'
         user_obj = User.objects.get(username='shibil1')
+        total_amount =  Cart.objects.filter(user=user_obj).aggregate(total=Sum('total_price'))['total'] + 20
         if order_status == 'created': 
             order = Orders.objects.create(
             address=address_gb,
