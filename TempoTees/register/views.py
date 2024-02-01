@@ -12,6 +12,7 @@ import pyotp
 from .models import TempoUser as User
 from django.core.validators import EmailValidator
 from home.models import referral_code
+from home.models import Profile
 
 
 #============== this is global template for user details =====================#
@@ -141,6 +142,8 @@ def otp(request):
             new_user.last_name = temp_last_name
             code = 'Ab' + str(random.randint(0,1000)) + 'Tb'
             referral_code.objects.create(user=new_user, code=code)
+            profile = Profile(user=new_user)
+            profile.save()
             new_user.save()
         except:
             new_user = User.objects.create_user(username='shibil1', email='shibilallakkat@gmail.com', password='1234qwer')
@@ -148,6 +151,8 @@ def otp(request):
             new_user.last_name = 'shibil'
             code = 'Ab' + str(random.randint(0,1000)) + 'Tb'
             referral_code.objects.create(user=new_user, code=code)
+            profile = Profile(user=new_user)
+            profile.save()
             new_user.save()
             return redirect('r:login')
         
