@@ -283,12 +283,15 @@ def checkout(request):
                 if cart.quantity > cart.product.stock:
                     messages.success(request, 'sorry! stock is not enough decrease the number!')
                     return redirect('h:cart')
-                
-            address = request.POST.get('address')
-            order_notes = request.POST.get('order_notes')
-            payment_mode = request.POST.get('payment_mode')
-            payment_mode_obj = PaymentModes.objects.get(mode=payment_mode)
-            address_obj = Address.objects.filter(name=address)[0]
+            try:    
+                address = request.POST.get('address')
+                order_notes = request.POST.get('order_notes')
+                payment_mode = request.POST.get('payment_mode')
+                payment_mode_obj = PaymentModes.objects.get(mode=payment_mode)
+                address_obj = Address.objects.filter(name=address)[0]
+            except:
+                messages.success(request, 'please select all fields proprely')
+                return redirect('h:checkout')
             global address_gb
             global payment_mode_gb
             global order_notes_gb
