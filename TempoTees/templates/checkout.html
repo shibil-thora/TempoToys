@@ -169,7 +169,7 @@
                 {% endif %}
                 {% endfor %}
               </div>
-              <a href="{% url 'h:add_address_from_checkout' 'xaax34' %}" class="btn head-sec text-light my-2">Add new address + </a>
+              <a href="{% url 'h:add_address' %}" class="btn head-sec text-light my-2">Add new address + </a>
 
               <h6 class="mt-5 text-dark"><strong> Payment Method </strong></h6>
               {% for mode in payment_modes %}
@@ -389,7 +389,7 @@
           `<strong> ${parseInt('{{sum}}')-data.discount_price}</strong>`
             ;
             document.getElementById('coupon_error').innerHTML = 
-          ``
+          `<small class="text-success">Coupon Applied!</small>`
           ;
           }
           else  {

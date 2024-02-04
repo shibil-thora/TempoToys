@@ -692,7 +692,7 @@ def order_details(request, pk):
 
 #=================================== ADD ADDRESSES ===================================#
 @never_cache
-def add_address(request, q):
+def add_address(request):
     if request.user.is_authenticated:
         if request.method == 'POST': 
             name = request.POST.get('name')
@@ -724,69 +724,6 @@ def add_address(request, q):
                 return render(request, 'add_address.html',context)
             
 
-            
-            if not error_occured:
-                try:
-                    state_obj = State.objects.get(name=state)
-                    address = Address.objects.create(
-                        name=name,
-                        profile=request.user.profile,
-                        area_desc=area_desc,
-                        city=city,
-                        state=state_obj,
-                        mobile_number=mobile_number,
-                        pincode=pincode,
-                    )
-                    Address.objects.update(is_default=False)
-                    address.is_default = True
-                    address.save()
-                    print(q)
-                    if 'xaax34' in q:
-                        return redirect('h:checkout')
-                    else:
-                        return redirect('h:profile')
-                except:
-                    messages.success(request, 'something went wrong')
-                    return redirect('h:add_address', q='x%x23')
-        context = {
-            'states': State.objects.all()
-        }
-        return render(request, 'add_address.html', context)
-    return redirect('r:login')
-
-
-#=================================== ADD ADDRESSES FROM CHECKOUT===================================#
-@never_cache
-def add_address_from_checkout(request, q):
-    if request.user.is_authenticated:
-        if request.method == 'POST': 
-            name = request.POST.get('name')
-            pincode = request.POST.get('pincode')
-            area_desc = request.POST.get('area_desc')
-            city = request.POST.get('city')
-            state = request.POST.get('state')
-            mobile_number = request.POST.get('mobile_number')
-
-            error_occured = False
-            if len(area_desc) < 50:
-                error_occured = True
-                messages.success(request, 'area description should be descriptive!')
-                context = {
-                    'states': State.objects.all(),
-                    'error': 'area description should be descriptive!',
-                }
-                return render(request, 'add_address.html',context)
-            
-            try:
-                int(pincode)
-            except:
-                error_occured = True
-                messages.success(request, 'invalid pincode!')
-                context = {
-                    'states': State.objects.all(),
-                    'error': 'invalid pincode!',
-                }
-                return render(request, 'add_address.html',context)
             
             if not error_occured:
                 try:
@@ -805,10 +742,10 @@ def add_address_from_checkout(request, q):
                     address.save()
                     print(q)
                     return redirect('h:checkout')
-                
+
                 except:
                     messages.success(request, 'something went wrong')
-                    return redirect('h:add_address', q='x%x23')
+                    return redirect('h:add_address')
         context = {
             'states': State.objects.all()
         }

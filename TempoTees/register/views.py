@@ -15,16 +15,6 @@ from home.models import referral_code
 from home.models import Profile
 
 
-#============== this is global template for user details =====================#
-interval = 85  #seconds
-otp_obj = pyotp.TOTP('base32secret3232', interval=interval)
-temp_username = None
-temp_password = None
-temp_email = None
-temp_first_name = None
-temp_last_name = None
-
-
 #=================================== LOGIN ===================================#
 @never_cache
 def login_user(request):
@@ -114,15 +104,18 @@ def signup_user(request):
             global temp_first_name 
             global temp_last_name
 
+            interval = 85  #seconds
+            otp_obj = pyotp.TOTP('base32secret3232', interval=interval)
             otp = otp_obj.now()
+            request.session['otp'] = otp
             send_mail_to_user(email=email, otp=otp)
             
 
-            temp_username = username
-            temp_password = password_1
-            temp_email = email
-            temp_first_name = first_name
-            temp_last_name = last_name
+            request.session['temp_username'] = username
+            request.session['temp_password'] = password_1
+            request.session['temp_email'] = email
+            request.session['temp_first_name'] = first_name
+            request.session['temp_last_name'] = last_name
 
             return redirect('r:otp')
         return render(request, 'signup.html')
@@ -132,10 +125,17 @@ def signup_user(request):
 #=================================== OTP VIEW ===================================#
 def otp(request):
     if request.method == 'POST':
+        temp_username = request.session.get('temp_username')
+        temp_password = request.session.get('temp_password')
+        temp_email = request.session.get('temp_email')
+        temp_first_name = request.session.get('temp_first_name')
+        temp_last_name = request.session.get('temp_last_name')
         otp = request.POST.get('otp')
-        if not otp == otp_obj.now():
+
+        if not otp == request.session.get('otp'):
             messages.success(request, 'invalid otp! sign in again')
             return redirect('r:signup')
+
         try:
             new_user = User.objects.create_user(username=temp_username, email=temp_email, password=temp_password)
             new_user.first_name = temp_first_name

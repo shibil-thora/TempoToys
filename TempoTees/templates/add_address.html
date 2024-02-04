@@ -8,7 +8,7 @@
   <a class="nav-link text-dark bg-light rounded" href="{% url 'h:orders' %}">My Orders</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link text-purple h5 bg-light rounded" href="{% url 'h:add_address' 'x%x23' %}">New Addresses</a>
+  <a class="nav-link text-purple h5 bg-light rounded" href="{% url 'h:add_address' %}">New Addresses</a>
 </li>
 <li class="nav-item">
   <a class="nav-link text-dark bg-light rounded" href="{% url 'h:wallet' %}">wallet</a>
@@ -29,7 +29,7 @@
           </div>
           <div class="col-md-7">
 
-            <form action="{% url 'h:add_address' 'x%x23' %}" method="POST">
+            <form action="{% url 'h:add_address' %}" method="POST">
               {% csrf_token %}
               <div class="p-3 p-lg-5 border shadow mb-3">
 
