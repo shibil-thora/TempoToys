@@ -65,7 +65,7 @@ class PaymentModes(models.Model):
 
 class Orders(models.Model):
     order_id = models.CharField(max_length=20, null=True)
-    address = models.ForeignKey(Address, null=True, on_delete=models.SET_NULL, related_name='orders')
+    address = models.CharField(max_length=1000, null=True)
     total_amount = models.DecimalField(max_digits=20, decimal_places=2, null=True)
     user = models.ForeignKey(TempoUser, on_delete=models.CASCADE, related_name='orders')
     date = models.DateTimeField(auto_now_add=True)

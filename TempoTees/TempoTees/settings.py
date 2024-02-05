@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-_4v6cv^o4@jbqfxp9xelytplbvi&m$a@=g-h6z3btm1vb-zyy5
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-#do not do add . only add the code files so that we can make the changes in the server
+#There will be migration to do in the aws
 
 # ALLOWED_HOSTS = ['65.0.99.30','172.31.12.253', 'ec2-65-0-99-30.ap-south-1.compute.amazonaws.com', 'localhost', ]
 ALLOWED_HOSTS = ['*']

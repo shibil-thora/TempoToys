@@ -20,6 +20,7 @@ urlpatterns = [
     path('add_to_cart/<product_id>', views.add_to_cart, name='add_to_cart'),
     path('remove_from_cart/<cart_id>', views.remove_from_cart, name='remove_from_cart'),
     path('add_address/', views.add_address, name='add_address'),
+    path('add_address_from_profile/', views.add_address_from_profile, name='add_address_from_profile'),
     path('edit_address/<pk>', views.edit_address, name='edit_address'),
     path('delete_address/<pk>', views.delete_address, name='delete_address'),
     path('add_cart_quantity/<int:cart_id>', views.add_cart_quantity, name='add_cart_quantity'),

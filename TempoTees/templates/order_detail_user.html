@@ -118,9 +118,8 @@
                       <div class="card-body">
                           <h5 class="card-title">User Details</h5>
                           <p class="card-text">
-                              <span class="d-block text-uppercase">{{ order.address.name }}</span>
-                              {{ order.address.area_desc }} {{ order.address.city }}, {{ order.address.state }}-{{ order.address.pincode }}<br>
-                              Contact: {{ order.address.mobile_number }}
+                              <span class="d-block text-uppercase">{{ order.address }}</span>
+                            
                           </p>
                           <p class="card-text"><strong>Username:</strong> {{ order.user.username }}</p>
                           <!-- Add other user details as needed -->

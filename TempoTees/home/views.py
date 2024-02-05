@@ -379,9 +379,15 @@ def payment_status(request):
         order_status = response_payment['status']
         response_payment['name'] = 'temporary user'
         user_obj = User.objects.get(id=user_id_gb)
+        address_str =  f'''
+        {address_gb.name} {address_gb.area_desc} 
+        {address_gb.city} {address_gb.state} {address_gb.pincode}
+        Contact: {address_gb.mobile_number}
+        '''
+
         if order_status == 'created': 
             order = Orders.objects.create(
-            address=address_gb,
+            address=address_str,
             total_amount=total_amount,
             user=user_obj,
             order_status=OrderStatus.objects.get(status='pending'),
@@ -412,39 +418,7 @@ def payment_status(request):
         Cart.objects.filter(user=user_obj).delete()
         return render(request, 'order_success.html', {'status': True})
     except:
-        order_id = 'BoH659B' + str(random.randint(10000, 99999))
-        order_status = 'created'
-        user_obj = User.objects.get(username='shibil1')
-        total_amount =  Cart.objects.filter(user=user_obj).aggregate(total=Sum('total_price'))['total'] + 20
-        if order_status == 'created': 
-            order = Orders.objects.create(
-            address=address_gb,
-            total_amount=total_amount,
-            user=user_obj,
-            order_status=OrderStatus.objects.get(status='pending'),
-            payment_mode=payment_mode_gb,
-            order_notes=order_notes_gb,
-            order_id=order_id
-            )
-            order.save()
-            if coupon_gb is not None:
-                UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)
-
-        order.paid = True
-        order.save()
-        for cart in user_obj.cart.all():
-                order_item = OrderItem.objects.create(
-                    order=order,
-                    item=cart.product,
-                    quantity=cart.quantity,
-                )
-                product = cart.product
-                product.stock -= cart.quantity
-                product.save()
-                order_item.save()
-                Cart.objects.filter(user=user_obj).delete()
-        Cart.objects.filter(user=user_obj).delete()
-        return render(request, 'order_success.html', {'status': True})
+        return render(request, 'order_success.html', {'status': False})
 
 
 
@@ -452,8 +426,13 @@ def payment_status(request):
 def payment_COD(request):
     if request.POST:
         user_obj = User.objects.get(id=user_id_gb)
+        address_str =  f'''
+        {address_gb.name} {address_gb.area_desc} 
+        {address_gb.city} {address_gb.state} {address_gb.pincode}
+        Contact: {address_gb.mobile_number}
+        '''
         order = Orders.objects.create(
-        address=address_gb,
+        address=address_str,
         total_amount=total_amount,
         user=user_obj,
         order_status=OrderStatus.objects.get(status='pending'),
@@ -486,8 +465,13 @@ def payment_COD(request):
 def payment_wallet(request):
     if request.POST:
         user_obj = User.objects.get(id=user_id_gb)
+        address_str =  f'''
+        {address_gb.name} {address_gb.area_desc} 
+        {address_gb.city} {address_gb.state} {address_gb.pincode}
+        Contact: {address_gb.mobile_number}
+        '''
         order = Orders.objects.create(
-        address=address_gb,
+        address=address_str,
         total_amount=total_amount,
         user=user_obj,
         order_status=OrderStatus.objects.get(status='pending'),
@@ -703,25 +687,13 @@ def add_address(request):
             mobile_number = request.POST.get('mobile_number')
 
             error_occured = False
-            if len(area_desc) < 50:
-                error_occured = True
-                messages.success(request, 'area description should be descriptive!')
-                context = {
-                    'states': State.objects.all(),
-                    'error': 'area description should be descriptive!',
-                }
-                return render(request, 'add_address.html',context)
             
             try:
                 int(pincode)
             except:
                 error_occured = True
                 messages.success(request, 'invalid pincode!')
-                context = {
-                    'states': State.objects.all(),
-                    'error': 'invalid pincode!',
-                }
-                return render(request, 'add_address.html',context)
+                return redirect('add_address')
             
 
             
@@ -740,17 +712,69 @@ def add_address(request):
                     Address.objects.update(is_default=False)
                     address.is_default = True
                     address.save()
-                    print(q)
                     return redirect('h:checkout')
 
                 except:
                     messages.success(request, 'something went wrong')
                     return redirect('h:add_address')
         context = {
-            'states': State.objects.all()
+            'states': State.objects.all(),
+            'profile': False
         }
         return render(request, 'add_address.html', context)
     return redirect('r:login')
+
+
+#=================================== ADD ADDRESSES FROM PROFILE ===================================#
+@never_cache
+def add_address_from_profile(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST': 
+            name = request.POST.get('name')
+            pincode = request.POST.get('pincode')
+            area_desc = request.POST.get('area_desc')
+            city = request.POST.get('city')
+            state = request.POST.get('state')
+            mobile_number = request.POST.get('mobile_number')
+
+            error_occured = False
+            
+            try:
+                int(pincode)
+            except:
+                error_occured = True
+                messages.success(request, 'invalid pincode!')
+                return redirect('add_address_from_profile')
+            
+
+            
+            if not error_occured:
+                try:
+                    state_obj = State.objects.get(name=state)
+                    address = Address.objects.create(
+                        name=name,
+                        profile=request.user.profile,
+                        area_desc=area_desc,
+                        city=city,
+                        state=state_obj,
+                        mobile_number=mobile_number,
+                        pincode=pincode,
+                    )
+                    Address.objects.update(is_default=False)
+                    address.is_default = True
+                    address.save()
+                    return redirect('h:profile')
+
+                except:
+                    messages.success(request, 'something went wrong')
+                    return redirect('h:add_address_from_profile')
+        context = {
+            'states': State.objects.all(),
+            'profile': True
+        }
+        return render(request, 'add_address.html', context)
+    return redirect('r:login')
+
 
 
 #=================================== EDIT ADDRESSES ===================================#
