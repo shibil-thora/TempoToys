@@ -136,6 +136,14 @@ def cart(request):
     return redirect('r:login')
 
 
+#=================================== CART VIEW ===================================#
+@never_cache
+def wishlist(request):
+    if request.user.is_authenticated:
+        return render(request, 'wishlist.html')
+    return redirect('r:login')
+
+
 #=================================== ADD TO CART ===================================#
 @never_cache
 def add_to_cart(request, product_id):
