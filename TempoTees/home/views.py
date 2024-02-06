@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import FileResponse, HttpResponse
 from django.views.decorators.cache import never_cache
 from admin_panel.models import CancelReason, Products, Gender, Wallet
-from .models import Cart, Profile, State, Address, Orders, OrderStatus, PaymentModes, OrderItem, referral_code
+from .models import Cart, Profile, State, Address, Orders, OrderStatus, PaymentModes, OrderItem, Wishlist, referral_code
 from admin_panel.models import WalletHistory
 from register.models import TempoUser as User
 from django.db.models import Sum
@@ -255,6 +255,19 @@ def remove_from_cart(request, cart_id):
             return redirect('h:cart')
         except:
             return redirect('h:cart')
+    return redirect('r:login')
+
+
+#=================================== REMOVE FROM WISH LIST ===================================#
+@never_cache
+def remove_from_wishlist(request, wish_id):
+    if request.user.is_authenticated:
+        try:
+            wish_obj = Wishlist.objects.get(id=wish_id)
+            wish_obj.delete()
+            return redirect('h:wishlist')
+        except:
+            return redirect('h:wishlist')
     return redirect('r:login')
 
 

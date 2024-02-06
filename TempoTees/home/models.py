@@ -10,6 +10,11 @@ class Cart(models.Model):
     total_price = models.DecimalField(max_digits=20, decimal_places=2, null=True)
 
 
+class Wishlist(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE, related_name='wishlist')
+    user = models.ForeignKey(TempoUser, on_delete=models.CASCADE, related_name='wishlist')
+
+
 class referral_code(models.Model):
     user = models.OneToOneField(TempoUser, on_delete=models.CASCADE, related_name='referral_code')
     code = models.CharField(max_length=10)
