@@ -140,15 +140,7 @@ def otp(request):
             profile.save()
             new_user.save()
         except:
-            new_user = User.objects.create_user(username='shibil1', email='shibilallakkat@gmail.com', password='1234qwer')
-            new_user.first_name = 'Muhammad'
-            new_user.last_name = 'shibil'
-            code = 'Ab' + str(random.randint(0,1000)) + 'Tb'
-            referral_code.objects.create(user=new_user, code=code)
-            profile = Profile(user=new_user)
-            profile.save()
-            new_user.save()
-            return redirect('r:login')
+            return redirect('r:signup')
         
         return redirect('r:login')
     return render(request, 'otp.html')

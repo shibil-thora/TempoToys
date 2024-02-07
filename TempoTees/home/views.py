@@ -358,23 +358,11 @@ def apply_coupon(request, code):
 
 #=================================== PAYMENT WINDOW ===================================#
 response_payment = None
-total_amount = None
 @csrf_exempt
 def payment_window(request, pk):
 
-    def get_session_data_by_user_id(user_id):
-        try:
-            session = Session.objects.filter(expire_date__gt=timezone.now(), session_data__contains=str(user_id)).latest('expire_date')
-            session_data_dict = session.get_decoded()
-
-            return session_data_dict
-        except Session.DoesNotExist:
-            return None
-    session = get_session_data_by_user_id(pk)
-    print(session.get('coupon_gb'))
-
-    global total_amount
     total_amount =  Cart.objects.filter(user=request.user).aggregate(total=Sum('total_price'))['total'] + 20
+
     try:
         coupon_gb = Coupon.objects.get(coupon_code=request.session.get('coupon_gb'))
     except:
@@ -385,6 +373,8 @@ def payment_window(request, pk):
     order_notes_gb = request.session.get('order_notes_gb')
     if coupon_gb:
         total_amount = total_amount - coupon_gb.discount_price
+    
+    request.session['total_amount'] = int(total_amount)
     if request.user.is_authenticated:
         client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
         payment_dict = {
@@ -419,8 +409,9 @@ def payment_status(request, pk):
         except Session.DoesNotExist:
             return None
     session = get_session_data_by_user_id(pk)
+    total_amount = session.get('total_amount')
 
-    print(User.objects.filter(id=pk))
+    user_obj = User.objects.filter(id=pk)
     response = request.POST
     params_dict = {
         'razorpay_order_id': response['razorpay_order_id'],
@@ -439,51 +430,90 @@ def payment_status(request, pk):
     payment_mode_gb = PaymentModes.objects.get(id=session.get('payment_mode_gb'))
     user_id_gb = session.get('user_id_gb')
     order_notes_gb = session.get('order_notes_gb')
-    # try:
-    order_id = response_payment['id']
-    order_status = response_payment['status']
-    response_payment['name'] = 'temporary user'
-    user_obj = User.objects.get(id=user_id_gb)
-    address_str =  f'''
-    {address_gb.name} {address_gb.area_desc} 
-    {address_gb.city} {address_gb.state} {address_gb.pincode}
-    Contact: {address_gb.mobile_number}
-    '''
+    try:
+        order_id = response_payment['id']
+        order_status = response_payment['status']
+        response_payment['name'] = 'temporary user'
+        user_obj = User.objects.get(id=user_id_gb)
+        address_str =  f'''
+        {address_gb.name} {address_gb.area_desc} 
+        {address_gb.city} {address_gb.state} {address_gb.pincode}
+        Contact: {address_gb.mobile_number}
+        '''
 
-    if order_status == 'created': 
-        order = Orders.objects.create(
-        address=address_str,
-        total_amount=total_amount,
-        user=user_obj,
-        order_status=OrderStatus.objects.get(status='pending'),
-        payment_mode=payment_mode_gb,
-        order_notes=order_notes_gb,
-        order_id=order_id
-        )
-        order.save()
-        if coupon_gb is not None:
-            UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)
-
-    status = client.utility.verify_payment_signature(params_dict)
-    order = Orders.objects.get(order_id=response['razorpay_order_id'])
-    order.razorpay_payment_id = response['razorpay_payment_id']
-    order.paid = True
-    order.save()
-    for cart in user_obj.cart.all():
-            order_item = OrderItem.objects.create(
-                order=order,
-                item=cart.product,
-                quantity=cart.quantity,
+        if order_status == 'created': 
+            order = Orders.objects.create(
+            address=address_str,
+            total_amount=total_amount,
+            user=user_obj,
+            order_status=OrderStatus.objects.get(status='pending'),
+            payment_mode=payment_mode_gb,
+            order_notes=order_notes_gb,
+            order_id=order_id
             )
-            product = cart.product
-            product.stock -= cart.quantity
-            product.save()
-            order_item.save()
-            Cart.objects.filter(user=user_obj).delete()
-    Cart.objects.filter(user=user_obj).delete()
-    return render(request, 'order_success.html', {'status': True})
-    # except:
-    #     return render(request, 'order_success.html', {'status': False})
+            order.save()
+            if coupon_gb is not None:
+                UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)
+
+        status = client.utility.verify_payment_signature(params_dict)
+        order = Orders.objects.get(order_id=response['razorpay_order_id'])
+        order.razorpay_payment_id = response['razorpay_payment_id']
+        order.paid = True
+        order.save()
+        for cart in user_obj.cart.all():
+                order_item = OrderItem.objects.create(
+                    order=order,
+                    item=cart.product,
+                    quantity=cart.quantity,
+                )
+                product = cart.product
+                product.stock -= cart.quantity
+                product.save()
+                order_item.save()
+                Cart.objects.filter(user=user_obj).delete()
+        Cart.objects.filter(user=user_obj).delete()
+        return render(request, 'order_success.html', {'status': True})
+    except:
+        order_id = 'NY7T90BHR' + str(random.randint(100000, 199999))
+        order_status = 'created'
+        user_obj = User.objects.get(id=user_id_gb)
+        address_str =  f'''
+        {address_gb.name} {address_gb.area_desc} 
+        {address_gb.city} {address_gb.state} {address_gb.pincode}
+        Contact: {address_gb.mobile_number}
+        '''
+
+        if order_status == 'created': 
+            order = Orders.objects.create(
+            address=address_str,
+            total_amount=total_amount,
+            user=user_obj,
+            order_status=OrderStatus.objects.get(status='pending'),
+            payment_mode=payment_mode_gb,
+            order_notes=order_notes_gb,
+            order_id=order_id
+            )
+            order.save()
+            if coupon_gb is not None:
+                UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)
+
+        status = client.utility.verify_payment_signature(params_dict)
+        order = Orders.objects.get(order_id=order_id)
+        order.paid = True
+        order.save()
+        for cart in user_obj.cart.all():
+                order_item = OrderItem.objects.create(
+                    order=order,
+                    item=cart.product,
+                    quantity=cart.quantity,
+                )
+                product = cart.product
+                product.stock -= cart.quantity
+                product.save()
+                order_item.save()
+                Cart.objects.filter(user=user_obj).delete()
+        Cart.objects.filter(user=user_obj).delete()
+        return render(request, 'order_success.html', {'status': True})
 
 
 
@@ -504,6 +534,7 @@ def payment_COD(request):
         {address_gb.city} {address_gb.state} {address_gb.pincode}
         Contact: {address_gb.mobile_number}
         '''
+        total_amount = request.session.get('total_amount')
         order = Orders.objects.create(
         address=address_str,
         total_amount=total_amount,
@@ -551,6 +582,7 @@ def payment_wallet(request):
         {address_gb.city} {address_gb.state} {address_gb.pincode}
         Contact: {address_gb.mobile_number}
         '''
+        total_amount = request.session.get('total_amount')
         order = Orders.objects.create(
         address=address_str,
         total_amount=total_amount,
