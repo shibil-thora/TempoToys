@@ -98,12 +98,6 @@ def signup_user(request):
             if not password_1 == password_2:
                 return render(request, 'signup.html', {'error': 'passwords do not match'})
             
-            global temp_username
-            global temp_password 
-            global temp_email 
-            global temp_first_name 
-            global temp_last_name
-
             interval = 85  #seconds
             otp_obj = pyotp.TOTP('base32secret3232', interval=interval)
             otp = otp_obj.now()

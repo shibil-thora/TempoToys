@@ -32,8 +32,10 @@
 
                         <!-- Total Row -->
                         <tr class="table-dark">
-                            <td colspan="3" class="text-right text-dark"><strong>Total:</strong></td>
-                            <td class="text-dark"><strong>{{ total }}</strong></td>
+                            <td class="text-dark"><strong>ship: 20</strong></td>
+                            
+                            <td colspan="2" class="text-right text-dark"><strong>Total:</strong></td>
+                            <td class="text-dark"><strong>  {{ total }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -49,7 +51,7 @@
                 {% elif payment %}
                 <!-- Pay Button -->
                 <div class="container text-center btn head-sec">
-                <form action="{% url 'h:payment_status' %}" method="POST">
+                <form action="{% url 'h:payment_status' request.user.id %}" method="POST">
                     {% csrf_token %}
                     <script
                         src="https://checkout.razorpay.com/v1/checkout.js"
