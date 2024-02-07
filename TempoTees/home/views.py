@@ -1062,3 +1062,29 @@ def download_invoice(request, pk):
         return response
     else:
         return redirect('r:login')
+
+
+#=================================== PRODUCT SEARCH ===================================#
+def search_product(request):
+    if request.user.is_authenticated:
+        products = Products.objects.filter(is_listed=True).order_by('-id')
+        q = request.GET.get('search_query')
+        products = products.filter(product_name__icontains=q)
+        print(bool(products))
+        if bool(products) == False:
+            products = Products.objects.filter(is_listed=True).filter(category__category_name__icontains=q).order_by('-id')
+            print(products)
+        paginator = Paginator(products, 3)
+        page = request.GET.get('page', 1)
+
+        try:
+            venues = paginator.page(page)
+        except :
+            raise Http404("Page not found")
+
+        context = {
+            'products': venues,
+            'venues': venues,
+        }
+        return render(request, 'shop.html', context)
+    return redirect('r:login')

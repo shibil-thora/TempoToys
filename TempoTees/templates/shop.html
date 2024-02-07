@@ -126,13 +126,21 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12 mb-0"><a href="{% url 'h:home' %}">Home</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Shop</strong></div>
+
+          <div class="container mx-0">
+            <form action="{% url 'h:search_product' %}" method="GET">
+            <div class="input-group flex-nowrap">
+              <button type="submit" class="input-group-text" href="" id="addon-wrapping"><i class="icon icon-search"></i></button>
+              <input type="text" class="form-control" name="search_query" placeholder="search for product or category" aria-label="Username" aria-describedby="addon-wrapping">
+            </div>
+          </div>
+        </form>
         </div>
       </div>
     </div>
 
     <div class="site-section">
       <div class="container">
-
         <div class="row mb-5">
           <div class="col-md-9 order-2">
 
@@ -166,7 +174,6 @@
               </div>
             </div>
             <div class="row mb-5">
-
                 {% for product in products %}
                 {% if product.offer %}
                 <div class="col-sm-6 col-lg-4 mb-4" data-aos="fade-up">

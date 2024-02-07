@@ -171,7 +171,7 @@
                           <h2 class="h5 text-black">{{ wishlist_item.product.product_name }}</h2>
                         </td>
                         <td><a href="{% url 'h:remove_from_wishlist' wishlist_item.product.id %}" class="btn head-sec text-light btn-sm">Remove</a></td>
-                        <td><a href="{% url 'h:add_to_cart' wishlist_item.id %}" class="btn head-sec text-light btn-sm">Add</a></td>
+                        <td><a href="{% url 'h:add_to_cart' wishlist_item.product.id %}" class="btn head-sec text-light btn-sm">Add</a></td>
                       </tr>
                     {% endfor %}
                   </tbody>
