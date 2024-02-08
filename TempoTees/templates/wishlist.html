@@ -62,7 +62,13 @@
                     <li>
                     <a href="{% url 'h:cart' %}" class="site-cart">
                       <span class="icon icon-shopping_cart"></span>
-                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count | default="0"}}</b></span>
+                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count|default="0"}}</b></span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'h:wishlist' %}" class="site-cart">
+                      <span class="icon icon-heart"></span>
+                      <span class="count head-sec bg-info text-light"><b>{{ request.user.wishlist.count|default:"0"}}</b></span>
                     </a>
                   </li>
                   <li class="d-inline-block d-md-none ml-md-0"><a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a></li>
