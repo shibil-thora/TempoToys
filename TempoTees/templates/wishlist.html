@@ -62,7 +62,7 @@
                     <li>
                     <a href="{% url 'h:cart' %}" class="site-cart">
                       <span class="icon icon-shopping_cart"></span>
-                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count|default="0"}}</b></span>
+                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count|default:"0"}}</b></span>
                     </a>
                   </li>
                   <li>
