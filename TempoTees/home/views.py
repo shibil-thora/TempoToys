@@ -499,7 +499,7 @@ def payment_status(request, pk):
     except:
         order_id = 'NY7T90BHR' + str(random.randint(100000, 199999))
         order_status = 'created'
-        user_obj = User.objects.get(id=user_id_gb)
+        user_obj = User.objects.get(id=pk)
         address_str =  f'''
         {address_gb.name} {address_gb.area_desc} 
         {address_gb.city} {address_gb.state} {address_gb.pincode}
