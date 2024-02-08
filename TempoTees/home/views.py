@@ -113,9 +113,11 @@ def product_view(request, pk):
         try:
             product = Products.objects.get(id=pk)
             is_carted = request.user.cart.all().filter(product=product)
+            is_wished = request.user.wishlist.all().filter(product=product)
             context = {
                 'product': product,
                 'is_carted': is_carted,
+                'is_wished': is_wished
             }
         except:
             return redirect('r:login')
@@ -170,6 +172,23 @@ def add_to_cart(request, product_id):
         except:
             return redirect('h:cart')
     return redirect('r:login')
+
+
+#=================================== ADD TO WISHLIST ===================================#
+@never_cache
+def add_to_wishlist(request, product_id):
+    if request.user.is_authenticated:
+        if Wishlist.objects.filter(product__id=product_id, user__id=request.user.id):
+            return redirect('h:product_view', pk=product_id)
+        try:
+            product_obj = Products.objects.get(id=product_id)
+            wish_obj = Wishlist.objects.create(user=request.user, product=product_obj)
+            wish_obj.save()
+            return redirect('h:product_view', pk=product_id)
+        except:
+            return redirect('h:product_view', pk=product_id)
+    return redirect('r:login')
+
 
 
 #=================================== ADD CART QUANTITY ===================================#

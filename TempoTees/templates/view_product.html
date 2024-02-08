@@ -54,9 +54,15 @@
                       <li>
                       <a href="{% url 'h:cart' %}" class="site-cart">
                         <span class="icon icon-shopping_cart"></span>
-                        <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count }}</b></span>
+                        <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count |default:"0" }}</b></span>
                       </a>
                     </li> 
+                    <li>
+                      <a href="{% url 'h:wishlist' %}" class="site-cart">
+                        <span class="icon icon-heart"></span>
+                        <span class="count head-sec bg-info text-light"><b>{{ request.user.wishlist.count | default:"0"}}</b></span>
+                      </a>
+                    </li>
                     <li class="d-inline-block d-md-none ml-md-0"><a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a></li>
                   </ul>
                 </div> 
@@ -207,8 +213,12 @@
               <p><a href="{% url 'h:add_to_cart' product.id %}" class="buy-now btn btn-sm head-sec text-light">Add To Cart</a>
               
               {% endif %}
-
-              <span><a href="{% url 'h:add_to_cart' product.id %}" class="buy-now btn btn-sm btn-info mx-3 text-light">Add To Wishlist</a></span>
+                {% if is_wished %}
+                <span><a href="{% url 'h:wishlist' %}" class="buy-now btn btn-sm btn-info mx-3 text-light">Go To Wishlist</a></span>
+                {% else %}
+                <span><a href="{% url 'h:add_to_wishlist' product.id %}" class="buy-now btn btn-sm btn-info mx-3 text-light">Add To Wishlist</a></span>
+             
+                {% endif %}
             </p>
               
   

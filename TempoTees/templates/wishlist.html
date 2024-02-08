@@ -62,7 +62,7 @@
                     <li>
                     <a href="{% url 'h:cart' %}" class="site-cart">
                       <span class="icon icon-shopping_cart"></span>
-                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count }}</b></span>
+                      <span class="count head-sec bg-info text-light"><b>{{ request.user.cart.count | default="0"}}</b></span>
                     </a>
                   </li>
                   <li class="d-inline-block d-md-none ml-md-0"><a href="#" class="site-menu-toggle js-menu-toggle"><span class="icon-menu"></span></a></li>
@@ -170,7 +170,7 @@
                         <td class="product-name">
                           <h2 class="h5 text-black">{{ wishlist_item.product.product_name }}</h2>
                         </td>
-                        <td><a href="{% url 'h:remove_from_wishlist' wishlist_item.product.id %}" class="btn head-sec text-light btn-sm">Remove</a></td>
+                        <td><a href="{% url 'h:remove_from_wishlist' wishlist_item.id %}" class="btn head-sec text-light btn-sm">Remove</a></td>
                         <td><a href="{% url 'h:add_to_cart' wishlist_item.product.id %}" class="btn head-sec text-light btn-sm">Add</a></td>
                       </tr>
                     {% endfor %}
