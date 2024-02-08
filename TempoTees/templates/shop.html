@@ -277,24 +277,66 @@
             </div>
           </div>
 
+          
           <div class="col-md-3 order-1 mb-5 mb-md-0">
+            <form action="{% url 'h:filter_parallel' %}" method="GET">
             <div class="border p-4 rounded mb-4">
               <h3 class="mb-3 h6 text-uppercase text-black d-block">Categories</h3>
               <ul class="list-unstyled mb-0">
-                <li class="mb-1"><a href="{% url 'h:gender_filter_shop' 'Educational' %}" class="d-flex"><span>Educational</span> <span class="text-black ml-auto"> </span></a></li>
-                <li class="mb-1"><a href="{% url 'h:gender_filter_shop' 'Puzzle' %}" class="d-flex"><span>Puzzle</span> <span class="text-black ml-auto"></span></a></li>
-                <li class="mb-1"><a href="{% url 'h:gender_filter_shop' 'Sportive' %}" class="d-flex"><span>Sportive</span> <span class="text-black ml-auto"></span></a></li>
-              </ul>
-            </div>
+                <li class="mb-1">
+                    <label class="d-flex">
+                        <input type="radio" name="category" value="Educational">
+                        <span> &nbsp; Educational</span>
+                        <span class="text-black ml-auto"> </span>
+                    </label>
+                </li>
+                <li class="mb-1">
+                    <label class="d-flex">
+                        <input type="radio" name="category" value="Puzzle">
+                        <span> &nbsp; Puzzle</span>
+                        <span class="text-black ml-auto"></span>
+                    </label>
+                </li>
+                <li class="mb-1">
+                    <label class="d-flex">
+                        <input type="radio" name="category" value="Sportive">
+                        <span> &nbsp; Sportive</span>
+                        <span class="text-black ml-auto"></span>
+                    </label>
+                </li>
+            </ul>
+            
+              </div>
             <div class="border p-4 rounded mb-4">
               <h3 class="mb-3 h6 text-uppercase text-black d-block">Brands</h3>
               <ul class="list-unstyled mb-0">
-                <li class="mb-1"><a href="{% url 'h:gender_filter_brand' 'Wembley' %}" class="d-flex"><span>Wembley</span> <span class="text-black ml-auto"> </span></a></li>
-                <li class="mb-1"><a href="{% url 'h:gender_filter_brand' 'Muren' %}" class="d-flex"><span>Muren</span> <span class="text-black ml-auto"></span></a></li>
-                <li class="mb-1"><a href="{% url 'h:gender_filter_brand' 'KidBea' %}" class="d-flex"><span>KidBea</span> <span class="text-black ml-auto"></span></a></li>
-              </ul>
+                <li class="mb-1">
+                    <label class="d-flex">
+                        <input type="radio" name="brand" value="Wembley">
+                        <span> &nbsp; Wembley</span>
+                        <span class="text-black ml-auto"> </span>
+                    </label>
+                </li>
+                <li class="mb-1">
+                    <label class="d-flex">
+                        <input type="radio" name="brand" value="Muren">
+                        <span> &nbsp; Muren</span>
+                        <span class="text-black ml-auto"></span>
+                    </label>
+                </li>
+                <li class="mb-1">
+                    <label class="d-flex">
+                        <input type="radio" name="brand" value="KidBea">
+                        <span> &nbsp; KidBea</span>
+                        <span class="text-black ml-auto"></span>
+                    </label>
+                </li>
+            </ul>
+               
+     
             </div>
-
+            <input type="submit" value="filter" class="btn head sec">   
+          </form>
             
             
 

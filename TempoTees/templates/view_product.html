@@ -200,13 +200,17 @@
               <div class="div text-danger">Low stock: {{ product.stock }} remaining</div>
               {% endif %}
               {% if is_carted %}
-              <p><a href="{% url 'h:cart' %}" class="buy-now btn btn-sm head-sec-clicked text-light">Go To Cart</a></p>
+              <p><a href="{% url 'h:cart' %}" class="buy-now btn btn-sm head-sec-clicked text-light">Go To Cart</a>
               {% elif product.stock < 1 %}
-              <p><button disabled class="buy-now btn btn-sm btn-disabled head-sec text-light">Add To Cart</button></p>
+              <p><button disabled class="buy-now btn btn-sm btn-disabled head-sec text-light">Add To Cart</button>
               {% else %}
-              <p><a href="{% url 'h:add_to_cart' product.id %}" class="buy-now btn btn-sm head-sec text-light">Add To Cart</a></p>
+              <p><a href="{% url 'h:add_to_cart' product.id %}" class="buy-now btn btn-sm head-sec text-light">Add To Cart</a>
+              
               {% endif %}
 
+              <span><a href="{% url 'h:add_to_cart' product.id %}" class="buy-now btn btn-sm btn-info mx-3 text-light">Add To Wishlist</a></span>
+            </p>
+              
   
             </div>
           </div>

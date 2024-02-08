@@ -26,6 +26,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.units import inch
 import random
+from django.db.models import Q
 
 
 #=================================== LANDING PAGE ===================================#
@@ -1174,6 +1175,33 @@ def search_product(request):
         if bool(products) == False:
             products = Products.objects.filter(is_listed=True).filter(category__category_name__icontains=q).order_by('-id')
             print(products)
+        paginator = Paginator(products, 3)
+        page = request.GET.get('page', 1)
+
+        try:
+            venues = paginator.page(page)
+        except :
+            raise Http404("Page not found")
+
+        context = {
+            'products': venues,
+            'venues': venues,
+        }
+        return render(request, 'shop.html', context)
+    return redirect('r:login')
+
+
+#=================================== FILTER PARALLEL ===================================#
+def filter_parallel(request):
+    if request.user.is_authenticated:
+        category = request.GET.get('category')
+        brand = request.GET.get('brand')
+        if bool(brand) == False:
+            brand = '23870498shfsjdhfjkahslhskhldfk'
+        if bool(category) == False:
+            category = 'sdf38098sdf87878s7d8fahsjdfjkh'
+        products = Products.objects.filter(is_listed=True).order_by('-id')
+        products = products.filter(Q(category__category_name__icontains=category) | Q(brand__name__icontains=brand) ) 
         paginator = Paginator(products, 3)
         page = request.GET.get('page', 1)
 
