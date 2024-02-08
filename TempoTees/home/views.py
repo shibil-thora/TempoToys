@@ -491,6 +491,7 @@ def payment_status(request, pk):
                 product = cart.product
                 product.stock -= cart.quantity
                 product.save()
+                order_item.price = product.price
                 order_item.save()
                 Cart.objects.filter(user=user_obj).delete()
         Cart.objects.filter(user=user_obj).delete()
@@ -532,6 +533,7 @@ def payment_status(request, pk):
                 product = cart.product
                 product.stock -= cart.quantity
                 product.save()
+                order_item.price = product.price
                 order_item.save()
                 Cart.objects.filter(user=user_obj).delete()
         Cart.objects.filter(user=user_obj).delete()
@@ -581,6 +583,7 @@ def payment_COD(request):
                 product = cart.product
                 product.stock -= cart.quantity
                 product.save()
+                order_item.price = product.price
                 order_item.save()
                 Cart.objects.filter(user=user_obj).delete()
         Cart.objects.filter(user=user_obj).delete()
@@ -649,6 +652,7 @@ def payment_wallet(request):
                 product = cart.product
                 product.stock -= cart.quantity
                 product.save()
+                order_item.price = product.price
                 order_item.save()
                 Cart.objects.filter(user=user_obj).delete()
         Cart.objects.filter(user=user_obj).delete()
