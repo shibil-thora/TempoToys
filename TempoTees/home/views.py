@@ -311,16 +311,18 @@ def checkout(request):
             total_amount = Cart.objects.filter(user=request.user).aggregate(total=Sum('total_price'))['total']
         except:
             return redirect('r:login')
-
-        context = {
-                'carts': carts,
-                'shipping_charge': shipping_charge,
-                'cart_sum': total_amount,
-                'sum': total_amount + shipping_charge,
-                'addresses': Address.objects.all().filter(profile=request.user.profile).order_by('-id'),
-                'payment_modes': PaymentModes.objects.all(),
-                'key_id': settings.RAZOR_KEY_ID,
-            }
+        try:
+            context = {
+                    'carts': carts,
+                    'shipping_charge': shipping_charge,
+                    'cart_sum': total_amount,
+                    'sum': total_amount + shipping_charge,
+                    'addresses': Address.objects.all().filter(profile=request.user.profile).order_by('-id'),
+                    'payment_modes': PaymentModes.objects.all(),
+                    'key_id': settings.RAZOR_KEY_ID,
+                }
+        except:
+            return redirect('r:login')
         if request.method == 'POST': 
             carts = request.user.cart.all()
             for cart in carts:
