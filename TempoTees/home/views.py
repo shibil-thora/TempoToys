@@ -7,7 +7,7 @@ from django.views.decorators.cache import never_cache
 from admin_panel.models import Brand, CancelReason, Categories, Products, Gender, Wallet
 from .models import Cart, Profile, State, Address, Orders, OrderStatus, PaymentModes, OrderItem, Wishlist, referral_code
 from admin_panel.models import WalletHistory
-from register.models import TempoUser as User
+from register.models import TempSpace, TempoUser as User
 from django.contrib.sessions.models import Session
 from django.db.models import Sum
 from django.contrib import messages
@@ -347,6 +347,10 @@ def checkout(request):
             request.session['address_gb'] = address_obj.id
             request.session['payment_mode_gb'] = payment_mode_obj.id
             request.session['order_notes_gb'] = order_notes
+            TempSpace.objects.create(user=request.user, address_gb=address_obj.id, 
+                                     payment_mode_gb=payment_mode_obj.id,
+                                     order_notes_gb=order_notes
+                                     )
 
             return redirect ('h:payment_window', request.user.id)
         return render(request, 'checkout.html', context)
@@ -439,10 +443,11 @@ def payment_status(request, pk):
             return session_data_dict
         except Session.DoesNotExist:
             return None
+        
+    user_obj = User.objects.get(id=pk)
     session = get_session_data_by_user_id(pk)
     total_amount = session.get('total_amount')
 
-    user_obj = User.objects.filter(id=pk)
     response = request.POST
     params_dict = {
         'razorpay_order_id': response['razorpay_order_id'],
@@ -455,13 +460,12 @@ def payment_status(request, pk):
         coupon_gb = Coupon.objects.get(coupon_code=session.get('coupon_gb'))
     except:
         coupon_gb = None
-    print(request.user.username)
 
-    address_gb = Address.objects.get(id=session.get('address_gb'))
-    print(address_gb, session.get('address_gb'))
-    payment_mode_gb = PaymentModes.objects.get(id=session.get('payment_mode_gb'))
-    user_id_gb = session.get('user_id_gb')
-    order_notes_gb = session.get('order_notes_gb')
+    print(session.get('address_gb'))
+    address_gb = Address.objects.get(id=int(user_obj.tempspace.address_gb))
+    payment_mode_gb = PaymentModes.objects.get(id=user_obj.tempspace.payment_mode_gb)
+    user_id_gb = pk
+    order_notes_gb = user_obj.tempspace.order_notes_gb
     try:
         order_id = response_payment['id']
         order_status = response_payment['status']
@@ -473,7 +477,7 @@ def payment_status(request, pk):
         Contact: {address_gb.mobile_number}
         '''
 
-        if oder_status == 'created': 
+        if order_status == 'created': 
             order = Orders.objects.create(
             address=address_str,
             total_amount=total_amount,
@@ -494,6 +498,7 @@ def payment_status(request, pk):
         order.razorpay_payment_id = response['razorpay_payment_id']
         order.paid = True
         order.save()
+        TempSpace.objects.filter(user=user_obj).delete()
         for cart in user_obj.cart.all():
                 order_item = OrderItem.objects.create(
                     order=order,
@@ -510,6 +515,7 @@ def payment_status(request, pk):
         return render(request, 'order_success.html', {'status': True})
     except:
         order_id = 'NY7T90BHR' + str(random.randint(100000, 199999))
+        session = get_session_data_by_user_id(pk)
         order_status = 'created'
         user_obj = User.objects.get(id=user_id_gb)
         address_str =  f'''
@@ -539,6 +545,7 @@ def payment_status(request, pk):
             order.coupon_featured_by = coupon_gb.promoter
             order.coupon_discount = coupon_gb.discount_price
         order.save()
+        TempSpace.objects.filter(user=user_obj).delete()
         for cart in user_obj.cart.all():
                 order_item = OrderItem.objects.create(
                     order=order,
@@ -592,6 +599,7 @@ def payment_COD(request):
         
         order.paid = True
         order.save()
+        TempSpace.objects.filter(user=user_obj).delete()
         for cart in user_obj.cart.all():
                 order_item = OrderItem.objects.create(
                     order=order,
@@ -654,7 +662,7 @@ def payment_wallet(request):
         )
         order.order_id = '270000000' + str(order.id)
         order.save()
-
+        TempSpace.objects.filter(user=user_obj).delete()
 
         if coupon_gb is not None:
                 UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)

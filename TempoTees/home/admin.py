@@ -3,7 +3,14 @@ from .models import Cart, Profile, State, Address, OrderItem, referral_code
 from .models import PaymentModes, OrderStatus, Orders, Wishlist
 
 admin.site.register(Cart)
-admin.site.register(Address)
+
+
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ['id', 'profile', 'area_desc']
+    
+
+
+admin.site.register(Address, AddressAdmin)
 admin.site.register(State)
 admin.site.register(Profile)
 admin.site.register(OrderStatus)
