@@ -156,7 +156,7 @@
                 {% for address in addresses %}
                 {% if address.is_default %}
                 <div class="form-check">
-                  <input class="form-check-input my-3" type="radio" checked name="address" id="male" value="{{ address.name }}">
+                  <input class="form-check-input my-3" type="radio" checked name="address" id="male" value="{{ address.id }}">
                   <label class="form-check-label my-3" for="female">
                         <span class="d-block text-primary h6 text-uppercase">{{ address.name }}</span>
                       <p class="mb-0">{{ address.area_desc }} {{ address.city}}, {{address.state}}-{{ address.pincode }}
@@ -165,7 +165,7 @@
                 </div>
                 {% else %}
                 <div class="form-check">
-                  <input class="form-check-input my-3" type="radio" name="address" id="male" value="{{ address.name }}">
+                  <input class="form-check-input my-3" type="radio" name="address" id="male" value="{{ address.id }}">
                   <label class="form-check-label my-3" for="female">
                         <span class="d-block text-primary h6 text-uppercase">{{ address.name }}</span>
                       <p class="mb-0">{{ address.area_desc }} {{ address.city}}, {{address.state}}-{{ address.pincode }}

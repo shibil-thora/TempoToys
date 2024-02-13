@@ -41,6 +41,12 @@
     <p><strong>Total Amount:</strong> {{ order.total_amount }}</p>
     <p><strong>Order Status:</strong> {{ order.order_status }}</p>
     <p><strong>Payment mode:</strong> {{ order.payment_mode.mode }}</p>
+
+    {% if order.coupon_featured_by %}
+    <h5>Coupon applied: <i class="gd-check text-success"></i></h5>
+    <h5>Coupon discount: {{ order.coupon_discount }}</i></h5>
+    <h5>Coupon featured by: {{ order.coupon_featured_by }} </h5>
+    {% endif %}
 </div>
 </div>
 </div>

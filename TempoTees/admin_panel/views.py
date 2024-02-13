@@ -237,7 +237,7 @@ def products(request):
 def categories(request):
     if request.user.is_superuser:
         context = {
-            'categories': Categories.objects.order_by('-id')
+            'categories': Categories.objects.filter(is_listed=True).order_by('-id')
         }
         return render(request, 'categories.html', context)
     return redirect('r:login')
@@ -285,7 +285,8 @@ def delete_category(request, pk):
     if request.user.is_superuser:
         try:
             category = Categories.objects.get(id=pk)
-            category.delete()
+            category.is_listed = False
+            category.save()
             return redirect('a:categories')
 
         except:
@@ -315,8 +316,8 @@ def add_product(request):
                 if len(product_name) < 3:
                     error_occured = True
                     context = {
-                    'brands': Brand.objects.all(),
-                    'categories': Categories.objects.all(),
+                    'brands': Brand.objects.all().filter(is_listed=True),
+                    'categories': Categories.objects.all().filter(is_listed=True),
                     'genders': Gender.objects.all(),
                     'error': 'product name should be atleast 3 charactors!',
                     }
@@ -336,8 +337,8 @@ def add_product(request):
                 return redirect('a:products')
         
         context = {
-            'brands': Brand.objects.all(),
-            'categories': Categories.objects.all(),
+            'brands': Brand.objects.all().filter(is_listed=True),
+            'categories': Categories.objects.all().filter(is_listed=True),
             'genders': Gender.objects.all(),
         }
 
@@ -406,8 +407,8 @@ def edit_product(request, pk):
 
                 if len(product_name) < 3:
                     context = {
-                    'brands': Brand.objects.all(),
-                    'categories': Categories.objects.all(),
+                    'brands': Brand.objects.all().filter(is_listed=True),
+                    'categories': Categories.objects.all().filter(is_listed=True),
                     'genders': Gender.objects.all(),
                     'error': 'invalid entry!',
                     }
@@ -428,8 +429,8 @@ def edit_product(request, pk):
         context = {
             'product': product,
             'id': pk,
-            'brands': Brand.objects.all(),
-            'categories': Categories.objects.all(),
+            'brands': Brand.objects.all().filter(is_listed=True),
+            'categories': Categories.objects.all().filter(is_listed=True),
             'genders': Gender.objects.all(),
         }
         return render(request, 'edit_product.html', context)
@@ -457,7 +458,7 @@ def delete_images(request, pk, p_id):
 def brands(request):
     if request.user.is_superuser:
         context = {
-            'brands': Brand.objects.order_by('-id')
+            'brands': Brand.objects.filter(is_listed=True).order_by('-id')
         }
         return render(request, 'brands.html', context)
     return redirect('r:login')
@@ -515,7 +516,8 @@ def delete_brand(request, pk):
     if request.user.is_superuser:
         try:
             brand = Brand.objects.get(id=pk)
-            brand.delete()
+            brand.is_listed = False
+            brand.save()
             return redirect('a:brands')
 
         except:
@@ -688,7 +690,22 @@ def delete_coupon(request, pk):
     if request.user.is_superuser:
         try:
             coupon = Coupon.objects.get(id=pk)
-            coupon.delete()
+            coupon.activated = False
+            coupon.save()
+            return redirect('a:coupons')
+        except:
+            return redirect('a:coupons')
+    return redirect('r:login')
+
+
+#=================================== ACTIVATE COUPON  ===================================#
+@never_cache
+def activate_coupon(request, pk):
+    if request.user.is_superuser:
+        try:
+            coupon = Coupon.objects.get(id=pk)
+            coupon.activated = True
+            coupon.save()
             return redirect('a:coupons')
         except:
             return redirect('a:coupons')

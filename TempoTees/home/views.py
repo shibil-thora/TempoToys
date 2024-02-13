@@ -4,7 +4,7 @@ import json
 from django.shortcuts import render, redirect
 from django.http import FileResponse, HttpResponse
 from django.views.decorators.cache import never_cache
-from admin_panel.models import CancelReason, Products, Gender, Wallet
+from admin_panel.models import Brand, CancelReason, Categories, Products, Gender, Wallet
 from .models import Cart, Profile, State, Address, Orders, OrderStatus, PaymentModes, OrderItem, Wishlist, referral_code
 from admin_panel.models import WalletHistory
 from register.models import TempoUser as User
@@ -33,7 +33,7 @@ from django.db.models import Q
 @never_cache
 def index(request):
     context = {
-        'products': Products.objects.all().order_by('-id').filter(is_listed=True)
+        'products': Products.objects.all().order_by('-id').filter(is_listed=True).filter(brand__is_listed=True).filter(category__is_listed=True)
     }
     return render(request, 'index.html', context)
 
@@ -50,7 +50,7 @@ def gender_filter_home(request, q):
 @never_cache
 def shop(request):
     if request.user.is_authenticated:
-        products = Products.objects.filter(is_listed=True).order_by('-id')
+        products = Products.objects.filter(is_listed=True).order_by('-id').filter(brand__is_listed=True).filter(category__is_listed=True)
         paginator = Paginator(products, 3)
         page = request.GET.get('page', 1)
 
@@ -62,6 +62,8 @@ def shop(request):
         context = {
             'products': venues,
             'venues': venues,
+            'categories': Categories.objects.all().filter(is_listed=True),
+            'brands': Brand.objects.all().filter(is_listed=True),
         }
         return render(request, 'shop.html', context)
     return redirect('r:login')
@@ -334,7 +336,7 @@ def checkout(request):
                 order_notes = request.POST.get('order_notes')
                 payment_mode = request.POST.get('payment_mode')
                 payment_mode_obj = PaymentModes.objects.get(mode=payment_mode)
-                address_obj = Address.objects.filter(name=address)[0]
+                address_obj = Address.objects.get(id=int(address))
             except:
                 messages.success(request, 'please select all fields proprely')
                 return redirect('h:checkout')
@@ -363,6 +365,13 @@ def apply_coupon(request, code):
             }
             global coupon_gb
             request.session['coupon_gb'] = code
+            if not coupon.activated:
+                coupon = False
+                data = {
+                    'discount_price': 0
+                }
+                request.session['coupon_gb'] = None
+
             if UsedCoupon.objects.filter(user=request.user, coupon=coupon):
                 coupon = False
                 data = {
@@ -443,12 +452,13 @@ def payment_status(request, pk):
 
     client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
     try:
-        coupon_gb = Coupon.objects.get(coupon_code=request.session.get('coupon_gb'))
+        coupon_gb = Coupon.objects.get(coupon_code=session.get('coupon_gb'))
     except:
         coupon_gb = None
     print(request.user.username)
 
     address_gb = Address.objects.get(id=session.get('address_gb'))
+    print(address_gb, session.get('address_gb'))
     payment_mode_gb = PaymentModes.objects.get(id=session.get('payment_mode_gb'))
     user_id_gb = session.get('user_id_gb')
     order_notes_gb = session.get('order_notes_gb')
@@ -463,7 +473,7 @@ def payment_status(request, pk):
         Contact: {address_gb.mobile_number}
         '''
 
-        if order_status == 'created': 
+        if oder_status == 'created': 
             order = Orders.objects.create(
             address=address_str,
             total_amount=total_amount,
@@ -473,10 +483,12 @@ def payment_status(request, pk):
             order_notes=order_notes_gb,
             order_id=order_id
             )
-            order.save()
             if coupon_gb is not None:
                 UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)
-
+                order.coupon_featured_by = coupon_gb.promoter
+                order.coupon_discount = coupon_gb.discount_price
+                order.save()
+             
         status = client.utility.verify_payment_signature(params_dict)
         order = Orders.objects.get(order_id=response['razorpay_order_id'])
         order.razorpay_payment_id = response['razorpay_payment_id']
@@ -523,6 +535,9 @@ def payment_status(request, pk):
         status = client.utility.verify_payment_signature(params_dict)
         order = Orders.objects.get(order_id=order_id)
         order.paid = True
+        if coupon_gb is not None: 
+            order.coupon_featured_by = coupon_gb.promoter
+            order.coupon_discount = coupon_gb.discount_price
         order.save()
         for cart in user_obj.cart.all():
                 order_item = OrderItem.objects.create(
@@ -568,6 +583,9 @@ def payment_COD(request):
         order_notes=order_notes_gb,
         )
         order.order_id = '270000000' + str(order.id)
+        if coupon_gb is not None: 
+            order.coupon_featured_by = coupon_gb.promoter
+            order.coupon_discount = coupon_gb.discount_price
         order.save()
         if coupon_gb is not None:
                 UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)
@@ -608,6 +626,10 @@ def payment_wallet(request):
         Contact: {address_gb.mobile_number}
         '''
         total_amount = request.session.get('total_amount')
+        if wallet.balance < order.total_amount: 
+            messages.success(request, 'wallet has not enough money')
+            return redirect('h:checkout')
+        
         order = Orders.objects.create(
         address=address_str,
         total_amount=total_amount,
@@ -622,10 +644,6 @@ def payment_wallet(request):
             wallet = user_obj.wallet
         except:
             wallet = Wallet.objects.create(user=user_obj, balance=0)
-        
-        if wallet.balance < order.total_amount: 
-            messages.success(request, 'wallet has not enough money')
-            return redirect('h:checkout')
         
         wallet.balance -= order.total_amount
         wallet.save()
@@ -642,6 +660,9 @@ def payment_wallet(request):
                 UsedCoupon.objects.create(coupon=coupon_gb, user=user_obj)
         
         order.paid = True
+        if coupon_gb is not None: 
+            order.coupon_featured_by = coupon_gb.promoter
+            order.coupon_discount = coupon_gb.discount_price
         order.save()
         for cart in user_obj.cart.all():
                 order_item = OrderItem.objects.create(
@@ -1015,6 +1036,7 @@ def cancel_order_item(request, item_id, order_id):
     if request.user.is_authenticated:
         try:
             order = Orders.objects.get(id=order_id)
+            temp_order_total_amount = order.total_amount
             item = OrderItem.objects.get(id=item_id)
             item.is_listed = False
             item.save()
@@ -1023,25 +1045,26 @@ def cancel_order_item(request, item_id, order_id):
                 product=item.item,
                 reason=reason
             )
+            temp_order_status = order.order_status.status
             if not order.order_items.filter(is_listed=True):
                 order.order_status = OrderStatus.objects.get(status='cancelled')
-                if not order.payment_mode.mode == 'COD':
-                    wallet = None
-                    try:
-                        wallet = request.user.wallet
-                    except:
-                        wallet = Wallet.objects.create(user=request.user, balance=0)
-                    
-                    wallet.balance += order.total_amount
-                    wallet.save()
-                    WalletHistory.objects.create(
-                        wallet=wallet,
-                        amount=order.total_amount,
-                        payment_mode=order.payment_mode.mode,
-                    )
-                    print('comes here')
                 order.save()
-                return redirect('h:order_details', pk=order_id)
+            if not (order.payment_mode.mode == 'COD' and temp_order_status != 'delivered'):
+                wallet = None
+                try:
+                    wallet = request.user.wallet
+                except:
+                    wallet = Wallet.objects.create(user=request.user, balance=0)
+                
+                wallet.balance += temp_order_total_amount - order.total_amount
+                wallet.save()
+                WalletHistory.objects.create(
+                    wallet=wallet,
+                    amount=temp_order_total_amount - order.total_amount,
+                    payment_mode=order.payment_mode.mode,
+                )
+            order.save()
+            return redirect('h:order_details', pk=order_id)
         except:
                 return redirect('h:orders')
 
@@ -1115,20 +1138,24 @@ def download_invoice(request, pk):
     if request.user.is_authenticated:
         try:
             order = Orders.objects.get(id=pk)
-        except:
+        except Orders.DoesNotExist:
             return redirect('r:login')
+
+        total_before_discount = order.total_amount
+
         order_data = {
             'order_id': order.order_id,
             'customer_name': request.user.username,
             'date': order.date.date(),
             'items': [
-                {'product': item.item.product_name, 'quantity': item.quantity, 'price': item.item.price} for 
+                {'product': item.item.product_name, 'quantity': item.quantity, 'price': item.item.price} for
                 item in order.order_items.all()
             ],
-            'total': order.total_amount,
+            'total_before_discount': total_before_discount,
+            'address': order.address,
+            'payment_method': order.payment_mode,
         }
 
-       
         buffer = BytesIO()
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
@@ -1140,47 +1167,86 @@ def download_invoice(request, pk):
             'Heading1',
             parent=styles['Heading1'],
             spaceBefore=12,
-            fontSize=16,
-            textColor=colors.black,
+            fontSize=20,
+            textColor=colors.darkblue,
             alignment=1,
         )
-        heading = Paragraph("Order Invoice", heading_style)
+        heading = Paragraph("Invoice", heading_style)
 
-        order_details = [
-            ["Order Number", "Customer Name", "Date"],
-            [order_data['order_id'], order_data['customer_name'], order_data['date']],
+        # Add Payment Method and Address
+        payment_address_style = ParagraphStyle(
+            'PaymentAddressStyle',
+            parent=styles['Normal'],
+            fontSize=12,
+            textColor=colors.black,
+            alignment=1,
+            spaceAfter=10,
+        )
+        payment_address = Paragraph(f"Payment Method: {order_data['payment_method']}<br/>Address: {order_data['address']}",
+                                    payment_address_style)
+
+        # Create a paragraph for Order Details
+        order_details_paragraph_style = ParagraphStyle(
+            'OrderDetailsParagraphStyle',
+            parent=styles['Normal'],
+            fontSize=12,
+            textColor=colors.black,
+            alignment=1,
+            spaceAfter=10,
+        )
+        order_details_paragraph = Paragraph(
+            f"Order Number: {order_data['order_id']}<br/>Customer Name: {order_data['customer_name']}<br/>Date: {order_data['date']}",
+            order_details_paragraph_style
+        )
+
+        order_table_details = [
+            ["Order Details"],
+            [order_details_paragraph],
         ]
 
         order_table_style = TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.darkblue),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('GRID', (0, 0), (-1, -1), 1, colors.darkblue),
+            ('BOX', (0, 0), (-1, -1), 1, colors.darkblue),
         ])
-        order_table = Table(order_details, style=order_table_style, colWidths=[1.5 * inch, 1.5 * inch, 1.5 * inch])
+        order_table = Table(order_table_details, style=order_table_style, colWidths=[6 * inch])
 
         items_data = [
             ["Product", "Quantity", "Price", "Total"],
         ] + [
-            [item['product'], item['quantity'], f"{item['price']}/-", f"{item['quantity'] * item['price']}/-"]
+            [item['product'], f"Qty: {item['quantity']}", f"Price: ${item['price']}",
+             f"Total: ${item['quantity'] * item['price']}"]
             for item in order_data['items']
         ]
 
         items_table_style = TableStyle([
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica'),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.darkblue),
+            ('GRID', (0, 0), (-1, -1), 1, colors.darkblue),
+            ('BOX', (0, 0), (-1, -1), 1, colors.darkblue),
         ])
-        items_table = Table(items_data, style=items_table_style, colWidths=[2 * inch, 1 * inch, 1.5 * inch, 1.5 * inch])
+        items_table = Table(items_data, style=items_table_style, colWidths=[2.5 * inch, 1.5 * inch, 1.5 * inch, 1.5 * inch])
 
-        total = Paragraph(f"Total: {order_data['total']}/-", styles['Heading2'])
+        adjusted_total_style = ParagraphStyle(
+            'AdjustedTotalStyle',
+            parent=styles['Normal'],
+            fontSize=12,
+            textColor=colors.black,
+            alignment=1,
+            spaceBefore=10,
+        )
+        adjusted_total_paragraph = Paragraph(
+            f"Total Amount: ${total_before_discount} /-",
+            adjusted_total_style)
 
-        doc.build([heading, order_table, items_table, total])
+        doc.build([heading, payment_address, order_table, items_table, adjusted_total_paragraph])
 
         buffer.seek(0)
         response.write(buffer.read())
@@ -1189,16 +1255,15 @@ def download_invoice(request, pk):
     else:
         return redirect('r:login')
 
-
 #=================================== PRODUCT SEARCH ===================================#
 def search_product(request):
     if request.user.is_authenticated:
-        products = Products.objects.filter(is_listed=True).order_by('-id')
+        products = Products.objects.filter(is_listed=True).order_by('-id').filter(brand__is_listed=True).filter(category__is_listed=True)
         q = request.GET.get('search_query')
         products = products.filter(product_name__icontains=q)
         print(bool(products))
         if bool(products) == False:
-            products = Products.objects.filter(is_listed=True).filter(category__category_name__icontains=q).order_by('-id')
+            products = Products.objects.filter(is_listed=True).filter(category__category_name__icontains=q).order_by('-id').filter(brand__is_listed=True).filter(category__is_listed=True)
             print(products)
         paginator = Paginator(products, 3)
         page = request.GET.get('page', 1)
@@ -1222,11 +1287,12 @@ def filter_parallel(request):
         category = request.GET.get('category')
         brand = request.GET.get('brand')
         if bool(brand) == False:
-            brand = '23870498shfsjdhfjkahslhskhldfk'
+            brand = ''
         if bool(category) == False:
-            category = 'sdf38098sdf87878s7d8fahsjdfjkh'
+            category = ''
+
         products = Products.objects.filter(is_listed=True).order_by('-id')
-        products = products.filter(Q(category__category_name__icontains=category) | Q(brand__name__icontains=brand) ) 
+        products = products.filter(Q(category__category_name__icontains=category) & Q(brand__name__icontains=brand) ) 
         paginator = Paginator(products, 3)
         page = request.GET.get('page', 1)
 
@@ -1238,6 +1304,8 @@ def filter_parallel(request):
         context = {
             'products': venues,
             'venues': venues,
+            'categories': Categories.objects.all().filter(is_listed=True),
+            'brands': Brand.objects.all().filter(is_listed=True),
         }
         return render(request, 'shop.html', context)
     return redirect('r:login')

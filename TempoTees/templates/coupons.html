@@ -21,7 +21,7 @@
               <th scope="col"  >Min Price</th>
               <th scope="col"  >Created Date</th>
               <th scope="col"  >Valid Days</th>
-              <th scope="col"  >Delete</th>
+              <th scope="col"  >Activation</th>
             </tr>
           </thead>
           <tbody>
@@ -33,7 +33,17 @@
               <td style="border: 2px solid #dee2e6">{{ coupon.min_price }} &#8377;</td>
               <td style="border: 2px solid #dee2e6">{{ coupon.created_date.day }}-{{ coupon.created_date.month }}-{{ coupon.created_date.year }}</td>
               <td style="border: 2px solid #dee2e6">{{ coupon.days_valid }}</td>
-              <td style="border: 2px solid #dee2e6"> <a href="{% url 'a:delete_coupon' coupon.id %}"class="text-danger"><i class="gd-trash btn btn-danger"></i></a></td>
+              {% if coupon.activated %}
+              <td style="border: 2px solid #dee2e6"> <a href="{% url 'a:delete_coupon' coupon.id %}"class="text-danger"><i class="gd-close btn btn-danger"></i></a>
+                <br>
+                <small class="text-success">activated</small>
+              </td>
+              {% else %}
+              <td style="border: 2px solid #dee2e6"> <a href="{% url 'a:activate_coupon' coupon.id %}"class="text-danger"><i class="gd-check btn btn-success"></i></a>
+                <br>
+                <small class="text-danger">deactivated</small>
+              </td>
+              {% endif %}
             </tr>
             {% endfor %}
 

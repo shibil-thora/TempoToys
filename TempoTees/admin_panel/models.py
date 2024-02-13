@@ -7,7 +7,7 @@ from decimal import Decimal
 
 class Brand(models.Model):
     name = models.CharField(max_length=100)
-    logo = models.ImageField(upload_to='uploads/')
+    is_listed = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -22,6 +22,7 @@ class Gender(models.Model):
 
 class Categories(models.Model):
     category_name = models.CharField(max_length=100)
+    is_listed = models.BooleanField(default=True)
 
     def __str__(self):
         return self.category_name
@@ -74,6 +75,8 @@ class Coupon(models.Model):
     min_price = models.DecimalField(max_digits=20, decimal_places=2)
     created_date = models.DateTimeField(auto_now_add=True)
     days_valid = models.IntegerField()
+    activated = models.BooleanField(default=True)
+    promoter = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.coupon_code

@@ -1,5 +1,5 @@
 from django.db import models
-from admin_panel.models import Products, Gender
+from admin_panel.models import Coupon, Products, Gender
 from register.models import TempoUser
 
 
@@ -79,6 +79,8 @@ class Orders(models.Model):
     order_status = models.ForeignKey(OrderStatus, on_delete=models.RESTRICT, related_name='orders')
     payment_mode = models.ForeignKey(PaymentModes, on_delete=models.RESTRICT, related_name='orders')
     order_notes = models.TextField(null=True)
+    coupon_featured_by = models.CharField(max_length=100, null=True)
+    coupon_discount = models.DecimalField(max_digits=20, decimal_places=2, null=True)
 
 
 class OrderItem(models.Model):

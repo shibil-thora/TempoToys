@@ -289,54 +289,30 @@
             <div class="border p-4 rounded mb-4">
               <h3 class="mb-3 h6 text-uppercase text-black d-block">Categories</h3>
               <ul class="list-unstyled mb-0">
+                {% for category in categories %}
                 <li class="mb-1">
                     <label class="d-flex">
-                        <input type="radio" name="category" value="Educational">
-                        <span> &nbsp; Educational</span>
+                        <input type="radio" name="category" value="{{ category.category_name }}">
+                        <span> &nbsp; {{ category.category_name }}</span>
                         <span class="text-black ml-auto"> </span>
                     </label>
                 </li>
-                <li class="mb-1">
-                    <label class="d-flex">
-                        <input type="radio" name="category" value="Puzzle">
-                        <span> &nbsp; Puzzle</span>
-                        <span class="text-black ml-auto"></span>
-                    </label>
-                </li>
-                <li class="mb-1">
-                    <label class="d-flex">
-                        <input type="radio" name="category" value="Sportive">
-                        <span> &nbsp; Sportive</span>
-                        <span class="text-black ml-auto"></span>
-                    </label>
-                </li>
+                {% endfor %}
             </ul>
             
               </div>
             <div class="border p-4 rounded mb-4">
               <h3 class="mb-3 h6 text-uppercase text-black d-block">Brands</h3>
               <ul class="list-unstyled mb-0">
+                {% for brand in brands %}
                 <li class="mb-1">
                     <label class="d-flex">
-                        <input type="radio" name="brand" value="Wembley">
-                        <span> &nbsp; Wembley</span>
+                        <input type="radio" name="brand" value="{{ brand.name }}">
+                        <span> &nbsp; {{ brand.name }}</span>
                         <span class="text-black ml-auto"> </span>
                     </label>
                 </li>
-                <li class="mb-1">
-                    <label class="d-flex">
-                        <input type="radio" name="brand" value="Muren">
-                        <span> &nbsp; Muren</span>
-                        <span class="text-black ml-auto"></span>
-                    </label>
-                </li>
-                <li class="mb-1">
-                    <label class="d-flex">
-                        <input type="radio" name="brand" value="KidBea">
-                        <span> &nbsp; KidBea</span>
-                        <span class="text-black ml-auto"></span>
-                    </label>
-                </li>
+                {% endfor %}
             </ul>
                
      

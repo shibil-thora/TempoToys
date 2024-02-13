@@ -108,6 +108,11 @@
             </tbody>
         </table>
         <h5>shipping cost: 20</h5>
+        {% if order.coupon_featured_by %}
+        <h5>Coupon applied: <i class="icon icon-check text-success"></i></h5>
+        <h5>Coupon discount: {{ order.coupon_discount }}</i></h5>
+        <h5>Coupon featured by: {{ order.coupon_featured_by }} </h5>
+        {% endif %}
          
         {% endif %}
 
