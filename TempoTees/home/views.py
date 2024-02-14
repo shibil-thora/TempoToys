@@ -347,12 +347,18 @@ def checkout(request):
             request.session['address_gb'] = address_obj.id
             request.session['payment_mode_gb'] = payment_mode_obj.id
             request.session['order_notes_gb'] = order_notes
-
-            TempSpace.objects.filter(user=request.user).delete()
-            TempSpace.objects.create(user=request.user, address_gb=address_obj.id, 
-                                     payment_mode_gb=payment_mode_obj.id,
-                                     order_notes_gb=order_notes
-                                     )
+            try:
+                tempspace = request.user.tempspace
+                tempspace.addaddress_gb = address_obj.id
+                tempspace.payment_mode_gb = payment_mode_obj.id
+                tempspace.order_notes_gb = order_notes
+                tempspace.save()
+            except:
+                TempSpace.objects.filter(user=request.user).delete()
+                TempSpace.objects.create(user=request.user, address_gb=address_obj.id, 
+                                        payment_mode_gb=payment_mode_obj.id,
+                                        order_notes_gb=order_notes
+                                        )
 
             return redirect ('h:payment_window', request.user.id)
         return render(request, 'checkout.html', context)
@@ -370,18 +376,16 @@ def apply_coupon(request, code):
                 'discount_price': coupon.discount_price
             }
             request.session['coupon_gb'] = code
-            tempspace = request.user.tempspace
-            tempspace.coupon_gb = coupon.id
-            tempspace.save()
+            TempSpace.objects.filter(user=request.user).delete()
+            TempSpace.objects.create(user=request.user, coupon_gb=coupon.id)
             if not coupon.activated:
                 coupon = False
                 data = {
                     'discount_price': 0
                 }
                 request.session['coupon_gb'] = None
-                tempspace = request.user.tempspace
-                tempspace.coupon_gb = None
-                tempspace.save()
+                TempSpace.objects.filter(user=request.user).delete()
+                TempSpace.objects.create(user=request.user, coupon_gb=None)
 
             if UsedCoupon.objects.filter(user=request.user, coupon=coupon):
                 coupon = False
@@ -389,18 +393,16 @@ def apply_coupon(request, code):
                     'discount_price': 0
                 }
                 request.session['coupon_gb'] = None
-                tempspace = request.user.tempspace
-                tempspace.coupon_gb = None
-                tempspace.save()
+                TempSpace.objects.filter(user=request.user).delete()
+                TempSpace.objects.create(user=request.user, coupon_gb=None)
         except:
             coupon = False
             data = {
                 'discount_price': 0
             }
             request.session['coupon_gb'] = None
-            tempspace = request.user.tempspace
-            tempspace.coupon_gb = None
-            tempspace.save()
+            TempSpace.objects.filter(user=request.user).delete()
+            TempSpace.objects.create(user=request.user, coupon_gb=None)
         return JsonResponse(data)
     
 
