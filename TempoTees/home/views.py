@@ -349,7 +349,7 @@ def checkout(request):
             request.session['order_notes_gb'] = order_notes
             try:
                 tempspace = request.user.tempspace
-                tempspace.addaddress_gb = address_obj.id
+                tempspace.address_gb = address_obj.id
                 tempspace.payment_mode_gb = payment_mode_obj.id
                 tempspace.order_notes_gb = order_notes
                 tempspace.save()
