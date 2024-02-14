@@ -464,11 +464,10 @@ def payment_status(request, pk):
 
     client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
     try:
-        coupon_gb = Coupon.objects.get(coupon_code=session.get('coupon_gb'))
+        coupon_gb = Coupon.objects.get(id=user_obj.tempspace.coupon_gb)
     except:
         coupon_gb = None
 
-    print(session.get('address_gb'))
     address_gb = Address.objects.get(id=int(user_obj.tempspace.address_gb))
     payment_mode_gb = PaymentModes.objects.get(id=user_obj.tempspace.payment_mode_gb)
     user_id_gb = pk
