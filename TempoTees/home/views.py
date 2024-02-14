@@ -347,6 +347,8 @@ def checkout(request):
             request.session['address_gb'] = address_obj.id
             request.session['payment_mode_gb'] = payment_mode_obj.id
             request.session['order_notes_gb'] = order_notes
+
+            TempSpace.objects.filter(user=request.user).delete()
             TempSpace.objects.create(user=request.user, address_gb=address_obj.id, 
                                      payment_mode_gb=payment_mode_obj.id,
                                      order_notes_gb=order_notes
@@ -397,7 +399,9 @@ response_payment = None
 def payment_window(request, pk):
 
     total_amount =  Cart.objects.filter(user=request.user).aggregate(total=Sum('total_price'))['total'] + 20
-
+    tempspace = request.user.tempspace
+    tempspace.total_amount = total_amount
+    tempspace.save()
     try:
         coupon_gb = Coupon.objects.get(coupon_code=request.session.get('coupon_gb'))
     except:
@@ -408,6 +412,9 @@ def payment_window(request, pk):
     order_notes_gb = request.session.get('order_notes_gb')
     if coupon_gb:
         total_amount = total_amount - coupon_gb.discount_price
+        tempspace = request.user.tempspace
+        tempspace.total_amount = total_amount
+        tempspace.save()
     
     request.session['total_amount'] = int(total_amount)
     if request.user.is_authenticated:
@@ -446,7 +453,7 @@ def payment_status(request, pk):
         
     user_obj = User.objects.get(id=pk)
     session = get_session_data_by_user_id(pk)
-    total_amount = session.get('total_amount')
+    total_amount = user_obj.tempspace.total_amount
 
     response = request.POST
     params_dict = {
@@ -633,8 +640,14 @@ def payment_wallet(request):
         {address_gb.city} {address_gb.state} {address_gb.pincode}
         Contact: {address_gb.mobile_number}
         '''
+        wallet = None
+        try:
+            wallet = user_obj.wallet
+        except:
+            wallet = Wallet.objects.create(user=user_obj, balance=0)
+        
         total_amount = request.session.get('total_amount')
-        if wallet.balance < order.total_amount: 
+        if wallet.balance < total_amount: 
             messages.success(request, 'wallet has not enough money')
             return redirect('h:checkout')
         
@@ -647,12 +660,6 @@ def payment_wallet(request):
         order_notes=order_notes_gb,
         )
 
-        wallet = None
-        try:
-            wallet = user_obj.wallet
-        except:
-            wallet = Wallet.objects.create(user=user_obj, balance=0)
-        
         wallet.balance -= order.total_amount
         wallet.save()
         WalletHistory.objects.create(

@@ -45,12 +45,13 @@
                         {% for history in request.user.wallet.histories.all %}
                         <div class="card mb-3">
                         <div class="card-body">
-                            <p class="card-text transaction-date">{{history.date.day}}-{{history.date.month}}-{{history.date.year}}</p>
+                            <p class="card-text transaction-date">{{history.date.day}}-{{history.date.month}}-{{history.date.year}} </p>
                             {% if history.amount > 0 %}
-                            <p class="card-text transaction-amount negative text-success"> + {{ history.amount }}</p>
+                            <p class="card-text transaction-amount negative text-success"> + {{ history.amount }} <span> ({{history.payment_mode}})</span></p>
                             {% else %}
-                            <p class="card-text transaction-amount negative text-danger">  {{ history.amount }}</p>
+                            <p class="card-text transaction-amount negative text-danger">  {{ history.amount }}<span> ({{history.payment_mode}})</span></p>
                             {% endif %}
+                            
                         </div>
                       </div>
                       {% endfor %}

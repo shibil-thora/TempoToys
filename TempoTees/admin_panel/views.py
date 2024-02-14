@@ -601,8 +601,8 @@ def cancel_order(request, pk):
     if request.user.is_superuser:
         try:
             order = Orders.objects.get(id=pk)
-            if order.order_status == OrderStatus.objects.get(status='pending'):
-                order.order_status = OrderStatus.objects.get(status='cancelled')
+            temp_order_status = order.order_status.status
+            if not (order.payment_mode.mode == 'COD' and temp_order_status != 'delivered'):
                 wallet = None
                 try:
                     wallet = order.user.wallet
@@ -617,10 +617,13 @@ def cancel_order(request, pk):
                     payment_mode=order.payment_mode.mode,
                 )
                 order.save()
-                for item in order.order_items.all():
-                    product = item.item
-                    product.stock += item.quantity
-                    product.save()
+
+            order.order_status = OrderStatus.objects.get(status='cancelled')
+            order.save()
+            for item in order.order_items.all():
+                product = item.item
+                product.stock += item.quantity
+                product.save()
             return redirect('a:admin_orders')
         except:
             return redirect('a:admin_orders')
@@ -634,19 +637,21 @@ def add_coupon(request):
         if request.method == 'POST':
             coupon_code = request.POST.get('coupon_code')
             discount_price = request.POST.get('discount_price')
-            min_price = request.POST.get('min_price')
             days_valid = request.POST.get('days_valid')
+            promoter = request.POST.get('promoter')
 
             if len(coupon_code) < 4: 
                 messages.success(request, 'coupon code should be 4 charecters')
                 return redirect('a:add_coupon')
+            
+            if len(promoter.strip()) < 3: 
+                messages.success(request, 'promoter name should be 3 charecters')
+                return redirect('a:add_coupon')
+            
             if int(discount_price) < 0: 
                 messages.success(request, 'discount price should be a positive number')
                 return redirect('a:add_coupon')
             
-            if int(min_price) < 0: 
-                messages.success(request, 'price should be a positive number')
-                return redirect('a:add_coupon')
             
             if int(days_valid) < 0: 
                 messages.success(request, 'days should be a positive number')
@@ -655,8 +660,8 @@ def add_coupon(request):
             Coupon.objects.create(
                 coupon_code=coupon_code,
                 discount_price=discount_price,
-                min_price=min_price,
-                days_valid=days_valid
+                days_valid=days_valid,
+                promoter=promoter
             )
             return redirect('a:coupons')
         context = {

@@ -72,9 +72,9 @@ class Banner(models.Model):
 class Coupon(models.Model):
     coupon_code = models.CharField(max_length=10, blank=False)
     discount_price = models.DecimalField(max_digits=20, decimal_places=2)
-    min_price = models.DecimalField(max_digits=20, decimal_places=2)
+    min_price = models.DecimalField(max_digits=20, decimal_places=2, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
-    days_valid = models.IntegerField()
+    days_valid = models.IntegerField(null=True)
     activated = models.BooleanField(default=True)
     promoter = models.CharField(max_length=100, null=True)
 

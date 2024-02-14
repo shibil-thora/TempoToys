@@ -18,10 +18,11 @@
             <tr>
               <th scope="col"  >Coupon Code</th>
               <th scope="col"  >Discount Rate</th>
-              <th scope="col"  >Min Price</th>
               <th scope="col"  >Created Date</th>
               <th scope="col"  >Valid Days</th>
               <th scope="col"  >Activation</th>
+              <th scope="col"  >Promoter</th>
+
             </tr>
           </thead>
           <tbody>
@@ -30,9 +31,9 @@
             <tr>
               <td style="border: 2px solid #dee2e6"><a href="{% url 'a:edit_coupon' coupon.id %}" style="text-decoration: underline;"><strong>{{ coupon.coupon_code }}</strong></a></td>
               <td style="border: 2px solid #dee2e6">{{ coupon.discount_price }} &#8377;</td>
-              <td style="border: 2px solid #dee2e6">{{ coupon.min_price }} &#8377;</td>
               <td style="border: 2px solid #dee2e6">{{ coupon.created_date.day }}-{{ coupon.created_date.month }}-{{ coupon.created_date.year }}</td>
               <td style="border: 2px solid #dee2e6">{{ coupon.days_valid }}</td>
+              
               {% if coupon.activated %}
               <td style="border: 2px solid #dee2e6"> <a href="{% url 'a:delete_coupon' coupon.id %}"class="text-danger"><i class="gd-close btn btn-danger"></i></a>
                 <br>
@@ -44,6 +45,7 @@
                 <small class="text-danger">deactivated</small>
               </td>
               {% endif %}
+              <td style="border: 2px solid #dee2e6">{{ coupon.promoter }} &#8377;</td>
             </tr>
             {% endfor %}
 
