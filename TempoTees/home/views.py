@@ -369,14 +369,19 @@ def apply_coupon(request, code):
             data = {
                 'discount_price': coupon.discount_price
             }
-            global coupon_gb
             request.session['coupon_gb'] = code
+            tempspace = request.user.tempspace
+            tempspace.coupon_gb = coupon.id
+            tempspace.save()
             if not coupon.activated:
                 coupon = False
                 data = {
                     'discount_price': 0
                 }
                 request.session['coupon_gb'] = None
+                tempspace = request.user.tempspace
+                tempspace.coupon_gb = None
+                tempspace.save()
 
             if UsedCoupon.objects.filter(user=request.user, coupon=coupon):
                 coupon = False
@@ -384,12 +389,18 @@ def apply_coupon(request, code):
                     'discount_price': 0
                 }
                 request.session['coupon_gb'] = None
+                tempspace = request.user.tempspace
+                tempspace.coupon_gb = None
+                tempspace.save()
         except:
             coupon = False
             data = {
                 'discount_price': 0
             }
             request.session['coupon_gb'] = None
+            tempspace = request.user.tempspace
+            tempspace.coupon_gb = None
+            tempspace.save()
         return JsonResponse(data)
     
 
