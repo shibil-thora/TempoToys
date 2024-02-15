@@ -1303,6 +1303,8 @@ def search_product(request):
         context = {
             'products': venues,
             'venues': venues,
+            'categories': Categories.objects.all().filter(is_listed=True),
+            'brands': Brand.objects.all().filter(is_listed=True),
         }
         return render(request, 'shop.html', context)
     return redirect('r:login')
