@@ -53,7 +53,6 @@ def admin_dash(request):
             # Set x-axis ticks to display integers without decimals
             ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-            # Add grid lines for better readability
             ax.grid(True, linestyle='--', alpha=0.7)
 
             # Add labels to data points for better clarity
