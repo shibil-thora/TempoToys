@@ -126,6 +126,7 @@ def load_file(request):
             end_date = request.GET.get('end_date')
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
             end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            end_date = end_date + timedelta(days=1)
             buf = BytesIO()
             workbook = Workbook(buf, {'in_memory': True})
             worksheet = workbook.add_worksheet()
