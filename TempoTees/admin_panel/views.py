@@ -25,12 +25,13 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph
 from reportlab.lib.styles import ParagraphStyle
 from xlsxwriter.workbook import Workbook
-from datetime import datetime
+from datetime import datetime, timedelta
 from .forms import CouponForm, ProductOfferForm, CategoryOfferForm
 from django.db.models.functions import ExtractDay, ExtractWeek
 from home.models import Orders
 from home.models import PaymentModes
 from .models import Wallet, WalletHistory
+from matplotlib.ticker import MaxNLocator
 
 #=================================== DASH BOARD VIEW ===================================#
 @never_cache
@@ -42,12 +43,22 @@ def admin_dash(request):
             daily_days = [int(entry['day']) for entry in daily_data]
             daily_sales = [entry['total_sale'] for entry in daily_data]
 
-            fig, ax = plt.subplots()
-            ax.plot(daily_days, daily_sales, label='Daily Sales', marker='o')
+            fig, ax = plt.subplots(figsize=(10, 6))  # Adjust the figure size as needed
+            ax.plot(daily_days, daily_sales, label='Daily Sales', marker='o', color='red', linestyle='-', linewidth=2)
             ax.set_xlabel('Day')
             ax.set_ylabel('Sale Amount')
             ax.set_title('Daily Sales Report')
             ax.legend()
+            
+            # Set x-axis ticks to display integers without decimals
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+            # Add grid lines for better readability
+            ax.grid(True, linestyle='--', alpha=0.7)
+
+            # Add labels to data points for better clarity
+            for i, txt in enumerate(daily_sales):
+                ax.annotate(f'{txt:.2f}', (daily_days[i], daily_sales[i]), textcoords="offset points", xytext=(0, 5), ha='center')
 
             buffer = BytesIO()
             plt.savefig(buffer, format='png')
@@ -55,33 +66,11 @@ def admin_dash(request):
             daily_graph = base64.b64encode(buffer.read()).decode('utf-8')
             plt.clf()
 
-            # Weekly Sales Data
-            weekly_data = Orders.objects.filter(order_status__status='delivered').values(week=ExtractWeek('date')).annotate(total_sale=Sum('total_amount'))
-            weekly_weeks = [entry['week'] for entry in weekly_data]
-            weekly_sales = [entry['total_sale'] for entry in weekly_data]
-
-            fig, ax = plt.subplots()
-            ax.plot(weekly_weeks, weekly_sales, label='Weekly Sales', marker='o', linestyle='-', color='r', linewidth=2)
-            ax.set_xlabel('Week')
-            ax.set_ylabel('Sale Amount')
-            ax.set_title('Weekly Sales Report')
-            ax.legend()
-
-            buffer = BytesIO()
-            plt.savefig(buffer, format='png')
-            buffer.seek(0)
-            weekly_graph = base64.b64encode(buffer.read()).decode('utf-8')
-            plt.clf()
-
-            return render(request, 'admin_panel.html', 
-                          {'daily_graph': daily_graph, 'weekly_graph': weekly_graph, 'orders': Orders.objects.filter(order_status=OrderStatus.objects.get(status='delivered'))}
-                   )
+            return render(request, 'admin_panel.html', {'daily_graph': daily_graph, 'orders': Orders.objects.filter(order_status=OrderStatus.objects.get(status='delivered'))})
         except:
             return redirect('r:login')
 
     return redirect('r:login')
-
-
 #=================================== PDF RESPONSE ===================================#
 @never_cache
 def load_file(request):
@@ -91,6 +80,8 @@ def load_file(request):
             end_date = request.GET.get('end_date')
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
             end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            end_date = end_date + timedelta(days=1)
+
             buf = BytesIO()
             doc = SimpleDocTemplate(buf, pagesize=letter)
 
@@ -136,6 +127,7 @@ def load_file(request):
             end_date = request.GET.get('end_date')
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
             end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            end_date = end_date + timedelta(days=1)
             buf = BytesIO()
             workbook = Workbook(buf, {'in_memory': True})
             worksheet = workbook.add_worksheet()
