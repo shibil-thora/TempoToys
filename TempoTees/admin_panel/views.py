@@ -44,7 +44,7 @@ def admin_dash(request):
             daily_sales = [entry['total_sale'] for entry in daily_data]
 
             fig, ax = plt.subplots(figsize=(10, 6))  # Adjust the figure size as needed
-            ax.plot(daily_days, daily_sales, label='Daily Sales', marker='o', color='red', linestyle='-', linewidth=2)
+            ax.plot(daily_days, daily_sales, label='Daily Sales', marker='o', color='skyblue', linestyle='-', linewidth=2)
             ax.set_xlabel('Day')
             ax.set_ylabel('Sale Amount')
             ax.set_title('Daily Sales Report')
@@ -53,6 +53,7 @@ def admin_dash(request):
             # Set x-axis ticks to display integers without decimals
             ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
+            # Add grid lines for better readability
             ax.grid(True, linestyle='--', alpha=0.7)
 
             # Add labels to data points for better clarity
@@ -80,7 +81,6 @@ def load_file(request):
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
             end_date = datetime.strptime(end_date, "%Y-%m-%d")
             end_date = end_date + timedelta(days=1)
-
             buf = BytesIO()
             doc = SimpleDocTemplate(buf, pagesize=letter)
 
@@ -126,7 +126,6 @@ def load_file(request):
             end_date = request.GET.get('end_date')
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
             end_date = datetime.strptime(end_date, "%Y-%m-%d")
-            end_date = end_date + timedelta(days=1)
             buf = BytesIO()
             workbook = Workbook(buf, {'in_memory': True})
             worksheet = workbook.add_worksheet()
