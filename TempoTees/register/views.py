@@ -124,11 +124,18 @@ def otp(request):
         temp_email = request.session.get('temp_email')
         temp_first_name = request.session.get('temp_first_name')
         temp_last_name = request.session.get('temp_last_name')
+        pre_data = {
+            'username': temp_username,
+            'password': temp_password,
+            'email': temp_email,
+            'first_name': temp_first_name,
+            'last_name': temp_last_name,
+        }
         otp = request.POST.get('otp')
 
         if not otp == request.session.get('otp'):
-            messages.success(request, 'invalid otp! sign in again')
-            return redirect('r:signup')
+            messages.success(request, 'invalid otp! sign click sign up',)
+            return render(request, 'signup.html', pre_data)
 
         try:
             new_user = User.objects.create_user(username=temp_username, email=temp_email, password=temp_password)

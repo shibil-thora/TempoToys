@@ -307,10 +307,14 @@ def remove_from_wishlist(request, wish_id):
 def checkout(request):
     if request.user.is_authenticated:
         request.session['user_id_gb'] = request.user.id
+        if request.method != 'POST':
+            TempSpace.objects.filter(user=request.user).delete()
         try: 
             carts = request.user.cart.all()
             shipping_charge = 20
             total_amount = Cart.objects.filter(user=request.user).aggregate(total=Sum('total_price'))['total']
+            if request.method != 'POST':
+                TempSpace.objects.create(user=request.user, total_amount=total_amount+20)
         except:
             return redirect('r:login')
         try:
@@ -340,9 +344,6 @@ def checkout(request):
             except:
                 messages.success(request, 'please select all fields proprely')
                 return redirect('h:checkout')
-            global address_gb
-            global payment_mode_gb
-            global order_notes_gb
 
             request.session['address_gb'] = address_obj.id
             request.session['payment_mode_gb'] = payment_mode_obj.id
@@ -354,11 +355,7 @@ def checkout(request):
                 tempspace.order_notes_gb = order_notes
                 tempspace.save()
             except:
-                TempSpace.objects.filter(user=request.user).delete()
-                TempSpace.objects.create(user=request.user, address_gb=address_obj.id, 
-                                        payment_mode_gb=payment_mode_obj.id,
-                                        order_notes_gb=order_notes
-                                        )
+                return redirect('r:login')
 
             return redirect ('h:payment_window', request.user.id)
         return render(request, 'checkout.html', context)
@@ -376,16 +373,18 @@ def apply_coupon(request, code):
                 'discount_price': coupon.discount_price
             }
             request.session['coupon_gb'] = code
-            TempSpace.objects.filter(user=request.user).delete()
-            TempSpace.objects.create(user=request.user, coupon_gb=coupon.id)
+            tempspace = request.user.tempspace
+            tempspace.coupon_gb = coupon.id
+            tempspace.save()
             if not coupon.activated:
                 coupon = False
                 data = {
                     'discount_price': 0
                 }
                 request.session['coupon_gb'] = None
-                TempSpace.objects.filter(user=request.user).delete()
-                TempSpace.objects.create(user=request.user, coupon_gb=None)
+                tempspace = request.user.tempspace
+                tempspace.coupon_gb = None
+                tempspace.save()
 
             if UsedCoupon.objects.filter(user=request.user, coupon=coupon):
                 coupon = False
@@ -393,16 +392,18 @@ def apply_coupon(request, code):
                     'discount_price': 0
                 }
                 request.session['coupon_gb'] = None
-                TempSpace.objects.filter(user=request.user).delete()
-                TempSpace.objects.create(user=request.user, coupon_gb=None)
+                tempspace = request.user.tempspace
+                tempspace.coupon_gb = None
+                tempspace.save()
         except:
             coupon = False
             data = {
                 'discount_price': 0
             }
             request.session['coupon_gb'] = None
-            TempSpace.objects.filter(user=request.user).delete()
-            TempSpace.objects.create(user=request.user, coupon_gb=None)
+            tempspace = request.user.tempspace
+            tempspace.coupon_gb = None
+            tempspace.save()
         return JsonResponse(data)
     
 
@@ -411,21 +412,19 @@ response_payment = None
 @csrf_exempt
 def payment_window(request, pk):
 
-    total_amount =  Cart.objects.filter(user=request.user).aggregate(total=Sum('total_price'))['total'] + 20
     tempspace = request.user.tempspace
-    tempspace.total_amount = total_amount
-    tempspace.save()
+    total_amount = tempspace.total_amount
     try:
-        coupon_gb = Coupon.objects.get(coupon_code=request.session.get('coupon_gb'))
+        coupon_gb = Coupon.objects.get(id=tempspace.coupon_gb)
     except:
         coupon_gb = None
+
     address_gb = Address.objects.get(id=request.session.get('address_gb'))
     payment_mode_gb = PaymentModes.objects.get(id=request.session.get('payment_mode_gb'))
     user_id_gb = request.session.get('user_id_gb')
     order_notes_gb = request.session.get('order_notes_gb')
-    if coupon_gb:
+    if coupon_gb is not None:
         total_amount = total_amount - coupon_gb.discount_price
-        tempspace = request.user.tempspace
         tempspace.total_amount = total_amount
         tempspace.save()
     
@@ -1066,6 +1065,9 @@ def cancel_order_item(request, item_id, order_id):
             temp_order_total_amount = order.total_amount
             item = OrderItem.objects.get(id=item_id)
             item.is_listed = False
+            product = item.item
+            product.stock += item.quantity
+            product.save()
             item.save()
             reason = request.POST.get('reason')
             CancelReason.objects.create(
@@ -1076,21 +1078,21 @@ def cancel_order_item(request, item_id, order_id):
             if not order.order_items.filter(is_listed=True):
                 order.order_status = OrderStatus.objects.get(status='cancelled')
                 order.save()
-            if not (order.payment_mode.mode == 'COD' and temp_order_status != 'delivered'):
-                wallet = None
-                try:
-                    wallet = request.user.wallet
-                except:
-                    wallet = Wallet.objects.create(user=request.user, balance=0)
-                
-                wallet.balance += temp_order_total_amount - order.total_amount
-                wallet.save()
-                WalletHistory.objects.create(
-                    wallet=wallet,
-                    amount=temp_order_total_amount - order.total_amount,
-                    payment_mode=order.payment_mode.mode,
-                )
-            order.save()
+                if not (order.payment_mode.mode == 'COD' and temp_order_status != 'delivered'):
+                    wallet = None
+                    try:
+                        wallet = request.user.wallet
+                    except:
+                        wallet = Wallet.objects.create(user=request.user, balance=0)
+                    
+                    wallet.balance += temp_order_total_amount 
+                    wallet.save()
+                    WalletHistory.objects.create(
+                        wallet=wallet,
+                        amount=temp_order_total_amount, 
+                        payment_mode=order.payment_mode.mode,
+                    )
+                order.save()
             return redirect('h:order_details', pk=order_id)
         except:
                 return redirect('h:orders')

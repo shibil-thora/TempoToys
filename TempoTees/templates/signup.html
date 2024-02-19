@@ -38,7 +38,7 @@
                                          <form action="{% url 'r:signup' %}" method="POST">
                     {% csrf_token %}
                     <div class="input-group mb-3">
-                        <input type="text" id="username" name="username" class="form-control form-control-lg bg-white fs-6" placeholder="username" required>
+                        <input type="text" id="username" value="{{username}}" name="username" class="form-control form-control-lg bg-white fs-6" placeholder="username" required>
                         <div class="container text-danger">
                             {% if 'username already exists' in error %}
                             <small>{{ error }}</small>
@@ -50,7 +50,7 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input type="text" id="email" name="email" class="form-control form-control-lg bg-white fs-6" placeholder="email address" required>
+                        <input type="text" id="email" value="{{email}}" name="email" class="form-control form-control-lg bg-white fs-6" placeholder="email address" required>
                         <div class="container text-danger">
                             {% if 'email already exists' in error %}
                             <small>{{ error }}</small>
@@ -65,19 +65,19 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input type="text" name="first_name" class="form-control form-control-lg bg-white fs-6" placeholder="fist name" required>
+                        <input type="text" name="first_name" value="{{first_name}}" class="form-control form-control-lg bg-white fs-6" placeholder="fist name" required>
                     </div>
 
                     <div class="input-group mb-3">
-                        <input type="text" id="last_name" name="last_name" class="form-control form-control-lg bg-white fs-6" placeholder="last name">
+                        <input type="text" id="last_name" name="last_name" value="{{last_name}}" class="form-control form-control-lg bg-white fs-6" placeholder="last name">
                     </div>
 
                     <div class="input-group mb-3">
-                        <input type="password" id="pass1" name="password1" class="form-control form-control-lg bg-white fs-6" placeholder="password" required>
+                        <input type="password" id="pass1" name="password1" value="{{password}}" class="form-control form-control-lg bg-white fs-6" placeholder="password" required>
                     </div>
 
                     <div class="input-group mb-3">
-                        <input type="password" id="pass2" name="password2" class="form-control form-control-lg bg-white fs-6" placeholder="confirm password" required>
+                        <input type="password" id="pass2" name="password2" value="{{password}}" class="form-control form-control-lg bg-white fs-6" placeholder="confirm password" required>
                         <div class="container text-danger">
                             {% if 'passwords do not match' in error %}
                             <small>{{ error }}</small>
@@ -91,7 +91,18 @@
                             {% endif %}
                             
                         </div>
+
+                        
+                        {% if messages %}
+                        {% for message in messages %}
+                        {% if forloop.first %}
+                        <small class="text-danger text-center mx-auto">{{message}}</small>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
                     </div>
+
+                    
                 
                     <button class="btn head-sec btn-block text-white" type="submit">signup</button>
 
