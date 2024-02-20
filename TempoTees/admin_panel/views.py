@@ -39,14 +39,14 @@ def admin_dash(request):
     if request.user.is_superuser:
         try:
             # Daily Sales Data
-            daily_data = Orders.objects.filter(order_status__status='delivered').values(day=ExtractDay('date')).annotate(total_sale=Sum('total_amount'))
+            daily_data = Orders.objects.values(day=ExtractDay('date')).annotate(total_sale=Sum('total_amount'))
             daily_days = [int(entry['day']) for entry in daily_data]
             daily_sales = [entry['total_sale'] for entry in daily_data]
 
             fig, ax = plt.subplots(figsize=(10, 6))  # Adjust the figure size as needed
             ax.plot(daily_days, daily_sales, label='Daily Sales', marker='o', color='skyblue', linestyle='-', linewidth=2)
             ax.set_xlabel('Day')
-            ax.set_ylabel('Sale Amount')
+            ax.set_ylabel('Order Amount')
             ax.set_title('Daily Sales Report')
             ax.legend()
             
