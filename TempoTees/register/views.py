@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -75,6 +76,9 @@ def signup_user(request):
             
             if len(username) < 5:
                 return render(request, 'signup.html', {'error': 'username must be atleast 5 charecters'})
+            
+            if re.match("^[^a-zA-Z0-9]*$", username):
+                return render(request, 'signup.html', {'error': 'username must contain alphabets or digits'})
             
             if User.objects.filter(username=username):
                 return render(request, 'signup.html', {'error': 'username already exists'})

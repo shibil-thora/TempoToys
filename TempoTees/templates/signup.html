@@ -46,6 +46,9 @@
                             {% if 'username must be atleast 5 charecters' in error %}
                             <small>{{ error }}</small>
                             {% endif %}
+                            {% if 'username must contain alphabets' in error %}
+                            <small>{{ error }}</small>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -61,6 +64,8 @@
                             {% if 'username should be alphanumeric' in error %}
                             <small>{{ error }}</small>
                             {% endif %}
+                            
+                            
                         </div>
                     </div>
 
