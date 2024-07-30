@@ -159,6 +159,7 @@ def add_to_cart(request, product_id):
         if Cart.objects.filter(product__id=product_id, user__id=request.user.id):
             return redirect('h:cart')
         try:
+            Wishlist.objects.filter(product_id=product_id).delete()
             product_obj = Products.objects.get(id=product_id)
             price = product_obj.price
             if ProductOffer.objects.filter(product=product_obj):
